@@ -1,0 +1,237 @@
+*{
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.container{
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  
+}
+.login-box h1{
+  text-align: left;
+  margin-bottom: 20px ;
+}
+.login-box{
+  width: 500px;
+  background-color:#f5f7fa;
+  padding: 40px;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+#btn{
+  color: #fff !important;
+  background-color:darkblue !important;
+  width: 90%;
+  transition: 0.5s;
+}
+.forget{
+  display: flex;
+  justify-content: flex-end;
+}
+.forget a{
+  text-decoration: none !important;
+  color: rgba(12, 10, 10, 0.826) !important;
+  transition: 0.5s;
+}
+.forget:hover{
+  text-decoration: underline !important;
+}
+#btn:hover{
+  background-color: rgb(70, 70, 200) !important;
+}
+
+/* header */
+.header{
+  height: 70px;
+  position: fixed;
+  top:0;
+  right: 0;
+  left: 250px;
+  background: #52938e;
+  color: rgb(12, 9, 9);
+  border-bottom: 1px solid rgba(225,225,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 100;
+}
+.header-right{
+  font-size: 20px;
+  font-weight: 600px;
+  color: #0b0c0f;
+}
+.avatar{
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.avatar:hover{
+  background: #e7ebf3;
+}
+.avatar svg{
+  width: 26px;
+  height: 26px;
+  color: #0f1116 ;
+}
+.avatar-dropdown{
+  position: absolute;
+  top:calc(100% + 8px);
+  right: 0;
+  background: rgb(140, 157, 157);
+  border: 1px solid #c2c8f0;
+  border-radius: 8px;
+  box-shadow: 1px solid rgba(225,225,255,0.1);
+  width: 160px;
+  padding: 8px 0;
+  z-index: 1100;
+}
+.dropdown-item{
+  display: block;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #150b0b;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.dropdown-item:hover{
+  background-color: rgb(38, 60, 60);
+  color:#fff;
+}
+.dropdown-item.danger{
+  color: #eb2424;
+}
+.dropdown-divider{
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 6px 0;
+}
+/* Sidebar */
+.sidebar{
+  width: 250px;
+  color: #090505;
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #152a28 !important;
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar-header{
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(225,225,255,0.1);
+}
+.logo{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+  border-bottom: 1px solid rgba(225,225,255,0.1);
+}
+.menu-container{
+  padding: 20px 0;
+}
+.menu-item{
+  margin-bottom: 4px;
+}
+.menu-link{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 12px;
+  border-radius: 9px;
+  font-size: 14px;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.menu-link:hover{
+  background: #115E59;
+}
+.menu-link.active{
+ background-color: #0f766E;
+}
+.menu-label-container{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.menu-label{
+  margin-left: 8px;
+}
+.menu-icon{
+  background: #f8f8f8;
+}
+.menu-arrow{
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s;
+}
+.submenu{
+  margin-left: 28px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.submenu-link{
+  padding: 6px 10px;
+  font-size: 15px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #fff;
+  transition: background 0.2s;
+}
+.submenu-link:hover{
+  background: #295858;
+}
+.submenu-link.active{
+  font-weight: 500;
+  background: #2d6f67;
+}
+.app-container{
+  display: flex; 
+  min-height: 100vh; 
+}
+ .main-content{
+  flex: 1; 
+  /* margin-left: 250px;  */
+  background-color: #f9f9fa ;
+  margin-top: 70px;
+  min-height: 100vh;
+   transition: margin-left 0.3s ease; 
+} 
+ .content-area{
+  padding: 20px;
+ }
+
+ /*table-heading*/
+ table thead tr{
+  background-color: #00695c;
+  border-bottom: #004d40;
+  color: #ffffff !important;
+ }
+
+ table tbody tr:nth-child(odd){
+  background-color: #e0f2f1;
+ }
+  table tbody tr:nth-child(even){
+  background-color: #ffffff;
+ }
+ table tbody tr:hover{
+  background-color: #b2dfdb;
+
+ }
