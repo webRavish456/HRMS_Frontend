@@ -1,103 +1,167 @@
-import Image from "next/image";
+"use client"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const router = useRouter()
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+  useEffect(() => {
+    router.push("/dashboard")   // Redirects to dashboard/page.js because it is our home page...
+  }, [router])
+
+  return null
 }
+
+
+
+
+
+
+
+
+
+
+
+
+// export default function Page() {
+//   return <h2>Welcome to HRMS Dashboard</h2>;
+// }
+
+
+
+
+
+
+
+
+
+
+// import Layout from "@/components/Layout";
+// export default function Home(){
+//   return(
+//     <Layout>
+//       <div >
+//         {/* Empty Dashboard */}
+//         This is an empty dashboard...<br/>
+//         I will update it later...<br/>
+//       </div>
+//     </Layout>
+//   )
+// }
+
+
+
+
+
+
+
+
+
+
+// 'use client';
+
+// import { AppBar, Toolbar, IconButton, Typography, Box } from '@mui/material';
+// // import MenuIcon from '@mui/icons-material/Menu';
+// import AccountCircle from '@mui/icons-material/AccountCircle';
+
+// export default function HomePage() {
+//   return (
+//     <AppBar position="static">
+//       <Toolbar sx={{ justifyContent: 'space-between' }}>
+//         <Typography variant="h5">Dashboard</Typography>
+//         <Box>
+//           {/* <IconButton color="inherit"><MenuIcon /></IconButton> */}
+//           <IconButton color="inherit"><AccountCircle /></IconButton>
+//         </Box>
+//       </Toolbar>
+//     </AppBar>
+//   );
+// }
+
+
+
+/* 
+Also add a sidebar in this code which is opens when the menu button is clicked
+the sidebar includes the follwing things(Dashboard,Branch,Recruitment,Task Management,
+Ticket management,Employee,Staff,Attendance Management,Leave Management)
+*/
+
+
+
+
+// import {AppBar,Toolbar,Typography, Button } from '@mui/material';
+
+// export default function page() {
+//   return (
+//     <AppBar position="static">
+//       <Toolbar>
+//         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+//           HRMS Dashboard
+//         </Typography>
+//         <Button >Login</Button>
+//       </Toolbar>
+//     </AppBar>
+//   );
+// }
+
+
+
+
+
+
+
+
+// 'use client' //(Simple Login page.js)
+// import { Box, TextField, Button } from '@mui/material';
+// import { IconMail,IconEye } from '@tabler/icons-react';
+
+// export default function Loginpage.js() {
+//   return (
+//     <Box sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+//       <Box id="mybox" sx={{ p: 4, borderRadius: 2, width: 400 }}>
+//         <h1>Log In</h1>
+//         <TextField fullWidth label="Enter Email Id" type="email" margin="normal" variant="outlined" InputProps={{ startAdornment: <IconMail size={20} /> }}/>
+//         <TextField fullWidth label="Enter Password" type="password" margin="normal" variant="outlined" InputProps={{ startAdornment: <IconEye size={20} /> }}/>
+//         <Button id='forgot'>Forgot Password?</Button>
+//         <Button fullWidth variant="contained" sx={{ mt: 2,textTransform:'none',bgcolor:'navy'}}>Log In</Button>
+//       </Box>
+//     </Box>
+//   );
+// }
+
+
+
+
+
+
+// 'use client' //(GlassMorphism)
+// import { Box, TextField, Button, Typography } from '@mui/material';
+// import { IconLock, IconMail } from '@tabler/icons-react';
+// import { useRef } from 'react';
+
+// export default function Login() {
+//   const emailRef = useRef(), passRef = useRef();
+//   const handleLogin = () => console.log('Login clicked');
+
+//   return (
+//     <Box sx={{ minHeight: '100vh', backgroundImage: 'url(/myWallpaper.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+//       <Box sx={{ p: 4, backdropFilter: 'blur(10px)', bgcolor: 'rgba(255,255,255,0.2)', borderRadius: 4, boxShadow: 3, width: 300 }}>
+//         <Typography variant="h5" textAlign="center" mb={2}>Log In</Typography>
+//         <TextField fullWidth label="Email" type='email' inputRef={emailRef} margin="normal" InputProps={{ startAdornment: <IconMail size={20} /> }} />
+//         <TextField fullWidth label="Password" type="password" inputRef={passRef} margin="normal" InputProps={{ startAdornment: <IconLock size={20} /> }} />
+//         <Box display="flex" justifyContent="flex-end"><Button size="small" sx={{ mt: 0.5, fontSize: 11,textTransform:'none',color:'#333',fontWeight:'500' }}>Forgot Password?</Button></Box>
+//         <Button fullWidth variant="contained" sx={{ mt: 2,textTransform:'none' }} onClick={handleLogin}>Log In</Button>
+//       </Box>
+//     </Box>
+//   );
+// }
+
+/*
+Write a code in next.js to make a modern glassmorphism login page.js
+using material UI and tablericons having email and password as 
+input,forgot password button of the bottom right corner of the
+password textfield and finally a login button.User should get a 
+pop up of successfully logined when the button is clicked.
+Also add a validation code to validate the form.And make this
+under 30 line of codes.
+*/
