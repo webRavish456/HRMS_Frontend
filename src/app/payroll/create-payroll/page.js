@@ -200,7 +200,7 @@ const CreatePayroll = () => {
         />
 
         <Button
-          sx={{ flex: "1 1 10%", height: "56px", fontSize:"15px" }}
+          sx={{ flex: "1 1 30%", height: "56px", fontSize:"15px", backgroundColor:"#115E59", color:"#ffffff"}}
           variant="contained"
           onClick={addAllowance}
         >
