@@ -18,7 +18,7 @@ const MenuItems = [
 { label: "Finance", icon: <BarChart size={20} /> , href: "/finance" },
 { label: "Reports", icon: <BarChart size={20} /> , href: "/reports" },
 { label: "Rewards", icon: <BarChart size={20} /> , href: "/rewards" },
-{ label: "Settings", icon: <BarChart size={20} /> , href: "/settings" },
+{ label: "Settings", icon: <BarCha rt size={20} /> , href: "/settings" },
 ];
 
 
