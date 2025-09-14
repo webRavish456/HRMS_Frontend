@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Menu, X, User } from 'lucide-react';
+import { User } from 'lucide-react';
 
 const Header = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -9,22 +9,21 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-left">
+        {/* Keep title generic, not hard-coded "Dashboard" */}
         <h1 className="page-title">Dashboard</h1>
       </div>
 
       <div className="header-right">
-        <div className="avatar" onClick={() => setIsProfileOpen(!isProfileOpen)}>
-          <User />
-          
+        <div
+          className="avatar"
+          onClick={() => setIsProfileOpen(!isProfileOpen)}
+        >
+          <User size={18} />
           {isProfileOpen && (
             <div className="avatar-dropdown">
-              <a href="#" className="dropdown-item">
-                My Profile
-              </a>
+              <a href="#" className="dropdown-item">My Profile</a>
               <div className="dropdown-divider"></div>
-              <a href="#" className="dropdown-item danger">
-                Logout
-              </a>
+              <a href="#" className="dropdown-item danger">Logout</a>
             </div>
           )}
         </div>
@@ -33,4 +32,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Header;

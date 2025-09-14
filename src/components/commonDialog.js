@@ -48,5 +48,4 @@ const CommonDialog = ({open, onClose, dialogTitle, dialogContent}) =>
      )
 }
 
-export default CommonDialog;
-
+export default CommonDialog;
