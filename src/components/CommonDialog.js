@@ -1,124 +1,51 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import React from "react"
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    IconButton,
+   
+  } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
-export default function CommonDialog() {
-  const [open, setOpen] = React.useState(false);
+const CommonDialog = ({open, onClose, dialogTitle, dialogContent}) =>
+{
+      
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-  
-  return (
-    <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open alert dialog
-      </Button>
-      <Dialog
+     return (
+        <>
+          <Dialog
         open={open}
-        onClose={handleClose}
+        onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        //TransitionComponent={null}
+        // TransitionComponent={React.Fragment}
+        // keepMounted
+        // disableEnforceFocus
+            
+        style={{padding:"0px"}}
       >
-        <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending anonymous
-            location data to Google, even when no apps are running.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose} autoFocus>
-            Agree
-          </Button>
-        </DialogActions>
+        {open &&   <DialogTitle id="alert-dialog-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            {dialogTitle}
+             <IconButton onClick={onClose} style={{ color: "inherit" }}>
+             <CloseIcon />
+             </IconButton>
+      </DialogTitle>}
+
+{open &&  <DialogContent >
+          {/* <DialogContentText id="alert-dialog-description"> */}
+
+          {dialogContent}
+  
+          {/* </DialogContentText> */}
+        </DialogContent>}
+     
       </Dialog>
-    </React.Fragment>
-  );
+
+        </>
+     )
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React from "react";
-// import {
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   DialogContentText,
-//   IconButton,
-// } from "@mui/material";
-// import CloseIcon from "@mui/icons-material/Close";
-
-// const CommonDialog = ({ open, onClose, dialogTitle, dialogContent }) => {
-//   return (
-//     <>
-//       <Dialog
-//         open={open}
-//         onClose={onClose}
-//         aria-labelledby="alert-dialog-title"
-//         aria-describedby="alert-dialog-description"
-//         //TransitionComponent={null}
-//         // TransitionComponent={React.Fragment}
-//         // keepMounted
-//         // disableEnforceFocus
-
-//         style={{ padding: "0px" }}
-//       >
-//         {open && (
-//           <DialogTitle
-//             id="alert-dialog-title"
-//             style={{
-//               display: "flex",
-//               justifyContent: "space-between",
-//               alignItems: "center",
-//             }}
-//           >
-//             {dialogTitle}
-//             <IconButton onClick={onClose} style={{ color: "inherit" }}>
-//               <CloseIcon />
-//             </IconButton>
-//           </DialogTitle>
-//         )}
-
-//         {open && (
-//           <DialogContent>
-//             <DialogContentText id="alert-dialog-description">
-//               {dialogContent}
-//             </DialogContentText>
-//           </DialogContent>
-//         )}
-//       </Dialog>
-//     </>
-//   );
-// };
-
-// export default CommonDialog;
+export default CommonDialog

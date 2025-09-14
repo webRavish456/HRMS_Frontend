@@ -1,69 +1,3 @@
-"use client";
-import { useState } from "react";
-import Header from "../components/Header";
-import Sidebar from "../components/Sidebar";
-import "../app/globals.css";
-
-export default function RootLayout({ children }) {
-  const [open, setOpen] = useState(true);
-
-  return (
-    <html lang="en">
-      <body>
-        <div className="layout">
-          <Sidebar open={open} />
-          <div className="main-content">
-            <Header toggleSidebar={() => setOpen(!open)} />
-            <div className="page-content">{children}</div>
-          </div>
-        </div>
-      </body>
-    </html>
-  );
-}
-
-
-
-
-
-// "use client"
-// import "./globals.css"
-
-// export default function RootLayout({ children }) {
-//   return (
-//     <html lang="en">
-//       <body>
-//         <body>{children}</body>
-//       </body>
-//     </html>
-//   )
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import { Geist, Geist_Mono } from "next/font/google";
 // import "./globals.css";
 
@@ -93,3 +27,142 @@ export default function RootLayout({ children }) {
 //     </html>
 //   );
 // }
+
+
+// app/layout.js
+// import "./globals.css";
+
+// export const metadata = {
+//   title: "HRMS Dashboard",
+//   description: "Human Resource Management System",
+// };
+
+// export default function RootLayout({ children }) {
+//   return (
+//     <html lang="en">
+//       <body>{children}</body>
+//     </html>
+//   );
+// }
+
+
+
+// import './globals.css';
+// import Layout from '../components/Layout';
+
+// export const metadata = {
+//   title: 'HRMS Dashboard',
+//   description: 'Human Resource Management System',
+// };
+
+// export default function RootLayout({ children }) {
+//   return (
+//     <html lang="en">
+//       <body>
+//         {/* Wrap pages with your persistent Layout so header + sidebar remain visible */}
+//         <Layout>{children}</Layout>
+//       </body>
+//     </html>
+//   );
+// }
+
+
+
+
+
+
+
+//chatgpt
+
+// import Sidebar from "@/components/Sidebar";
+// import Header from "@/components/Header";
+// import "./globals.css";
+
+// export default function RootLayout({ children }) {
+//   return (
+//     <html lang="en">
+//       <body>
+//         <div className="app-container">
+//           <Sidebar />
+//           <div className="main-content">
+//             <Header />
+//             <main className="content-area">{children}</main>
+//           </div>
+//         </div>
+//       </body>
+//     </html>
+//   );
+// }
+
+
+// src/app/layout.js
+// import './globals.css';
+
+// export const metadata = {
+//   title: 'HR Management System',
+//   description: 'Dashboard with Sidebar and Header',
+// };
+
+// export default function RootLayout({ children }) {
+//   return (
+//     <html lang="en">
+//       <body suppressHydrationWarning={true}>
+//         {children}
+//       </body>
+//     </html>
+//   );
+// }
+
+
+
+
+
+
+// src/app/layout.js
+// import './globals.css';
+
+// export const metadata = {
+//   title: 'HR Management System',
+//   description: 'Dashboard with Sidebar and Header',
+// };
+
+// export default function RootLayout({ children }) {
+//   return (
+//     <html lang="en">
+//       <body suppressHydrationWarning={true}>
+//         {children}
+//       </body>
+//     </html>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+import "./globals.css";   // because globals.css is in the same folder
+import Layout from "../components/Layout"; // Layout is outside app folder
+
+export const metadata = {
+  title: "HR Management System",
+  description: "Dashboard with Sidebar and Header",
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body suppressHydrationWarning={true}>
+        <Layout>
+          {children}
+        </Layout>
+      </body>
+    </html>
+  );
+}
