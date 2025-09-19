@@ -39,21 +39,21 @@ const TaskTables = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // 🔹 createData helper (To Do Task)
-  const createTodoData = (id, empName, task, deadline, assignedBy, status) => {
+  const createTodoData = (id, taskName,priority, startDate, dueDate, description,  remark, status) => {
     const handleView = () => {
-      setViewData({ id, empName, task, deadline, assignedBy, status });
+      setViewData({ id, taskName,priority,  startDate, dueDate, description, remark, status });
       setViewShow(true);
     };
     const handleEdit = () => {
-      setEditData({ id, empName, task, deadline, assignedBy, status });
+      setEditData({ id, taskName, priority, startDate, dueDate,description, remark, status });
       setEditShow(true);
     };
     const handleDelete = () => {
-      setDeleteData({ id, empName, task, deadline, assignedBy, status });
+      setDeleteData({ id, taskName, priority, startDate, dueDate, description, remark, status });
       setDeleteShow(true);
     };
     return {
-      id, empName, task, deadline, assignedBy, status,
+      id, taskName,priority,  startDate, dueDate, description, remark,status,
       action: (
         <>
           <IconButton style={{ color: "#072eb0" }} onClick={handleView}><VisibilityIcon /></IconButton>
@@ -65,21 +65,21 @@ const TaskTables = () => {
   };
 
   // 🔹 createData helper (Assign Task)
-  const createAssignData = (id, taskName, priority, startDate, dueDate, description, remarks, status) => {
+  const createAssignData = (id, taskName, priority, startDate, dueDate, assignee, description, remarks, status) => {
     const handleView = () => {
-      setViewData({ id, taskName, priority, startDate, dueDate, description, remarks, status });
+      setViewData({ id, taskName, priority, startDate, dueDate, assignee, description, remarks, status });
       setViewShow(true);
     };
     const handleEdit = () => {
-      setEditData({ id, taskName, priority, startDate, dueDate, description, remarks, status });
+      setEditData({ id, taskName, priority, startDate, dueDate,  assignee, description, remarks, status });
       setEditShow(true);
     };
     const handleDelete = () => {
-      setDeleteData({ id, taskName, priority, startDate, dueDate, description, remarks, status });
+      setDeleteData({ id, taskName, priority, startDate, dueDate,  assignee,description, remarks, status });
       setDeleteShow(true);
     };
     return {
-      id, taskName, priority, startDate, dueDate, description, remarks, status,
+      id, taskName, priority, startDate, dueDate, assignee, description, remarks, status,
       action: (
         <>
           <IconButton style={{ color: "#072eb0" }} onClick={handleView}><VisibilityIcon /></IconButton>
@@ -92,13 +92,13 @@ const TaskTables = () => {
 
   // 🔹 Dummy Data
   const [todoRows] = useState([
-    createTodoData(1, "John", "Frontend Fix", "05-09-2025", "Manager", "In Progress"),
-    createTodoData(2, "Alice", "Backend API", "10-09-2025", "Team Lead", "Pending"),
+    createTodoData(1, "Jjkjo", "Frontend Fix", "05-09-2025", "05-09-2025","Manager","good", "In Progress"),
+    createTodoData(2, "jhhuh", "Backend API", "10-09-2025","05-09-2025", "Team Lead","good", "Pending"),
   ]);
 
   const [assignRows] = useState([
-    createAssignData(1, "qasth", "High", "10-01-2025", "11-01-2025", "gguyh", "afgh", "Completed"),
-    createAssignData(2, "abc", "High", "22-11-2024", "22-11-2024", "This is first task", "remarks", "Pending"),
+    createAssignData(1, "qasth", "High", "10-01-2025", "11-01-2025","huih" ,"gguyh", "afgh", "Completed"),
+    createAssignData(2, "abc", "High", "22-11-2024", "22-11-2024","bjj", "This is first task", "remarks", "Pending"),
   ]);
 
   // 🔹 Search Filter
@@ -181,13 +181,17 @@ const TaskTables = () => {
         {/* To Do Task Table */}
         {activeTable === "todo" && (
           <TableContainer component={Paper}>
+
+          <h2>To do task</h2>
             <Table>
               <TableHead className="forheadcolor">
                 <TableRow>
-                  <TableCell><b>Employee Name</b></TableCell>
-                  <TableCell><b>Task</b></TableCell>
-                  <TableCell><b>Deadline</b></TableCell>
-                  <TableCell><b>Assigned By</b></TableCell>
+                  <TableCell><b>Task Name</b></TableCell>
+                  <TableCell><b>Priority</b></TableCell>
+                  <TableCell><b>Start date</b></TableCell>
+                  <TableCell><b>Due date</b></TableCell>
+                  <TableCell> <b>Description</b></TableCell>
+                  <TableCell><b>Remark</b></TableCell>
                   <TableCell><b>Status</b></TableCell>
                   <TableCell><b>Action</b></TableCell>
                 </TableRow>
@@ -196,10 +200,12 @@ const TaskTables = () => {
                 {filteredTodo.length > 0 ? (
                   filteredTodo.map((row) => (
                     <TableRow key={row.id}>
-                      <TableCell>{row.empName}</TableCell>
-                      <TableCell>{row.task}</TableCell>
-                      <TableCell>{row.deadline}</TableCell>
-                      <TableCell>{row.assignedBy}</TableCell>
+                      <TableCell>{row.taskName}</TableCell>
+                      <TableCell>{row.priority}</TableCell>
+                      <TableCell>{row.startDate}</TableCell>
+                      <TableCell>{row.dueDate}</TableCell>
+                      <TableCell>{row.description}</TableCell>
+                       <TableCell>{row. remark}</TableCell>
                       <TableCell>{row.status}</TableCell>
                       <TableCell>{row.action}</TableCell>
                     </TableRow>
@@ -215,6 +221,7 @@ const TaskTables = () => {
         {/* Assign Task Table */}
         {activeTable === "assign" && (
           <TableContainer component={Paper}>
+           <h2>Assign Task</h2>
             <Table>
               <TableHead className="forheadcolor">
                 <TableRow>
@@ -222,6 +229,7 @@ const TaskTables = () => {
                   <TableCell><b>Priority</b></TableCell>
                   <TableCell><b>Start Date</b></TableCell>
                   <TableCell><b>Due Date</b></TableCell>
+                  <TableCell><b>Assignee</b></TableCell>
                   <TableCell><b>Description</b></TableCell>
                   <TableCell><b>Remarks</b></TableCell>
                   <TableCell><b>Status</b></TableCell>
@@ -236,6 +244,7 @@ const TaskTables = () => {
                       <TableCell>{row.priority}</TableCell>
                       <TableCell>{row.startDate}</TableCell>
                       <TableCell>{row.dueDate}</TableCell>
+                      <TableCell>{row. assignee}</TableCell>
                       <TableCell>{row.description}</TableCell>
                       <TableCell>{row.remarks}</TableCell>
                       <TableCell>{row.status}</TableCell>
@@ -243,7 +252,7 @@ const TaskTables = () => {
                     </TableRow>
                   ))
                 ) : (
-                  <TableRow><TableCell colSpan={8} align="center">No results found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={9} align="center">No results found</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>

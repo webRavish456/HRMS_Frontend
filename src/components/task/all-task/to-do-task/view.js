@@ -1,20 +1,4 @@
-// import React from "react";
 
-// const Viewtodo = ({ viewData }) => {
-//   return (
-//     <div style={{width:"400px"}}>
-//       <p><b>Employee Name:</b> {viewData?.empName}</p>
-//       <p><b>Task:</b> {viewData?.task}</p>
-//       <p><b>Deadline:</b> {viewData?.deadline}</p>
-//        <p><b>Assigned By:</b> {viewData?.assignedBy}</p>
-//         <p><b>Status:</b> {viewData?.status}</p>
-//          <p><b>Action:</b> {viewData?.action}</p>
-        
-//     </div>
-//   );
-// };
-
-// export default Viewtodo;
 
 
 "use client";
@@ -25,10 +9,16 @@ const ViewTodo = ({ viewData }) => {
 
   return (
     <div>
-      <h3>View To Do Task</h3>
-      <p><b>Employee Name:</b> {viewData.empName}</p>
-      <p><b>Task:</b> {viewData.task}</p>
-      <p><b>Status:</b> {viewData.status}</p>
+      <h3 >View To Do Task</h3>
+     <h3><b>Task Name:</b> {viewData.taskName}</h3>
+      <h3><b>Priority:</b> {viewData.priority}</h3>
+       <h3><b>Start Date:</b> {viewData.startDate}</h3>
+        <h3><b>Due Date:</b> {viewData.dueDate}</h3>
+    
+          <h3><b>Description:</b> {viewData.description}</h3>
+           <h3><b>Remarks:</b> {viewData.remark}</h3>
+      
+      <h3><b>Status:</b> {viewData.status}</h3>
     </div>
   );
 };
