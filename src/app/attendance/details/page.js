@@ -1,28 +1,30 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   TextField,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Typography,
   Stack,
+  InputAdornment,
+  Pagination,
 } from "@mui/material";
+import { Search, Download } from "@mui/icons-material";
+import AddAttendance from "../../../components/Attendance/details/AddAttendance";
+import CommonDialog from "../../../components/commonDialog";
 
 export default function AttendanceDetails() {
   const today = new Date();
   const [view, setView] = useState("thisWeek");
   const [openDialog, setOpenDialog] = useState(false);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage] = useState(10);
 
   const employees = [
     { name: "Super Admin", role: "Admin" },
@@ -30,7 +32,19 @@ export default function AttendanceDetails() {
     { name: "Sarah Lee", role: "Designer" },
     { name: "Amit Kumar", role: "HR" },
     { name: "Emma Brown", role: "Tester" },
+    { name: "Michael Johnson", role: "Manager" },
+    { name: "Lisa Wilson", role: "Analyst" },
+    { name: "David Smith", role: "Developer" },
+    { name: "Jennifer Davis", role: "Designer" },
+    { name: "Robert Brown", role: "HR" },
+    { name: "Amanda Taylor", role: "Tester" },
+    { name: "William Anderson", role: "Manager" },
   ];
+
+  const filteredEmployees = employees.filter(emp =>
+    emp.name.toLowerCase().includes(search.toLowerCase()) ||
+    emp.role.toLowerCase().includes(search.toLowerCase())
+  );
 
   // Format date yyyy-mm-dd
   const formatDate = (d) =>
@@ -38,21 +52,30 @@ export default function AttendanceDetails() {
       d.getDate()
     ).padStart(2, "0")}`;
 
-  // Generate random hours
-  const randomHours = () => {
-    const hrs = Math.floor(Math.random() * 9);
+  // Generate predictable hours based on employee name and date
+  const getPredictableHours = (empName, dateStr) => {
+    // Create a simple hash from employee name and date
+    const hash = (empName + dateStr).split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    const hrs = Math.abs(hash) % 9;
     return hrs === 0 ? "0:00" : `${hrs}:00`;
   };
 
-  // Create random attendance records
+  // Create predictable attendance records
   const generateData = () => {
     const data = {};
     employees.forEach((emp) => {
       data[emp.name] = {};
+      // Generate data for current year
       for (let m = 0; m < 12; m++) {
-        for (let d = 1; d <= 28; d++) {
-          const date = new Date(today.getFullYear(), m, d);
-          data[emp.name][formatDate(date)] = randomHours();
+        const year = today.getFullYear();
+        const daysInMonth = new Date(year, m + 1, 0).getDate(); // Get actual days in month
+        for (let d = 1; d <= daysInMonth; d++) {
+          const date = new Date(year, m, d);
+          const dateStr = formatDate(date);
+          data[emp.name][dateStr] = getPredictableHours(emp.name, dateStr);
         }
       }
     });
@@ -60,6 +83,11 @@ export default function AttendanceDetails() {
   };
 
   const [records, setRecords] = useState(generateData());
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Date helpers
   const getStartOfWeek = (d) => {
@@ -127,58 +155,271 @@ export default function AttendanceDetails() {
     }));
   };
 
+  if (!isClient) {
+    return (
+      <Box sx={{ padding: "0.5rem", display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
+
+
   return (
-    <Box p={3}>
-      {/* Header */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h6" fontWeight="bold">
+    <Box sx={{ padding: "1.5rem", backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+      {/* Page Header */}
+      <Box sx={{ marginBottom: "2rem" }}>
+        <Typography variant="h4" sx={{ 
+          fontWeight: 700, 
+          color: "#1e293b", 
+          marginBottom: "0.5rem",
+          fontSize: "1.875rem"
+        }}>
+          HRMS Dashboard
+        </Typography>
+        <Typography variant="h6" sx={{ 
+          color: "#64748b", 
+          fontWeight: 500,
+          fontSize: "1.125rem"
+        }}>
           Attendance Details
         </Typography>
-        <Button variant="contained" onClick={() => setOpenDialog(true)}>
-          Add Attendance
-        </Button>
-      </Stack>
+      </Box>
+
+      {/* Search and Export Section */}
+      <Box sx={{ 
+        display: "flex", 
+        justifyContent: "space-between", 
+        alignItems: "center", 
+        marginBottom: "1.5rem",
+        backgroundColor: "white",
+        padding: "1rem",
+        borderRadius: "0.75rem",
+        boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)"
+      }}>
+        <TextField
+          placeholder="Search attendance details..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search sx={{ color: "#64748b" }} />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ 
+            width: "350px", 
+            "& .MuiOutlinedInput-root": { 
+              height: "44px",
+              borderRadius: "0.5rem",
+              "& fieldset": {
+                borderColor: "#e2e8f0"
+              },
+              "&:hover fieldset": {
+                borderColor: "#cbd5e1"
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "#3b82f6"
+              }
+            }
+          }}
+        />
+        <Box sx={{ display: "flex", gap: "0.75rem" }}>
+          <Button 
+            variant="outlined" 
+            startIcon={<Download />} 
+            sx={{ 
+              height: "44px",
+              borderRadius: "0.5rem",
+              borderColor: "#e2e8f0",
+              color: "#64748b",
+              fontWeight: 500,
+              "&:hover": {
+                borderColor: "#cbd5e1",
+                backgroundColor: "#f8fafc"
+              }
+            }}
+          >
+            Export
+          </Button>
+          <Button 
+            variant="contained" 
+            onClick={() => setOpenDialog(true)} 
+            sx={{ 
+              height: "44px",
+              borderRadius: "0.5rem",
+              backgroundColor: "#3b82f6",
+              fontWeight: 500,
+              "&:hover": {
+                backgroundColor: "#2563eb"
+              }
+            }}
+          >
+            Add Attendance
+          </Button>
+        </Box>
+      </Box>
 
       {/* Filter Buttons */}
-      <Stack direction="row" spacing={1} mb={2} flexWrap="wrap">
-        {[
-          ["today", "Today"],
-          ["thisWeek", "This Week"],
-          ["lastWeek", "Last Week"],
-          ["thisMonth", "This Month"],
-          ["lastMonth", "Last Month"],
-          ["thisYear", "This Year"],
-        ].map(([val, label]) => (
-          <Button
-            key={val}
-            variant={view === val ? "contained" : "outlined"}
-            onClick={() => setView(val)}
-          >
-            {label}
-          </Button>
-        ))}
-      </Stack>
+      <Box sx={{ 
+        marginBottom: "1.5rem",
+        backgroundColor: "white",
+        padding: "1rem",
+        borderRadius: "0.75rem",
+        boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)"
+      }}>
+        <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="center">
+          {[
+            ["today", "Today"],
+            ["thisWeek", "This Week"],
+            ["lastWeek", "Last Week"],
+            ["thisMonth", "This Month"],
+            ["lastMonth", "Last Month"],
+            ["thisYear", "This Year"],
+          ].map(([val, label]) => (
+            <Button
+              key={val}
+              variant={view === val ? "contained" : "outlined"}
+              onClick={() => setView(val)}
+              sx={{ 
+                textTransform: "capitalize",
+                borderRadius: "0.5rem",
+                fontWeight: 500,
+                minWidth: "100px",
+                height: "36px",
+                ...(view === val ? {
+                  backgroundColor: "#3b82f6",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#2563eb"
+                  }
+                } : {
+                  borderColor: "#e2e8f0",
+                  color: "#64748b",
+                  "&:hover": {
+                    borderColor: "#cbd5e1",
+                    backgroundColor: "#f8fafc"
+                  }
+                })
+              }}
+            >
+              {label}
+            </Button>
+          ))}
+        </Stack>
+      </Box>
 
-      {/* Table */}
-      <TableContainer component={Paper} sx={{ width: "100%",height:"auto" }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
-              <TableCell>Profile</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Total</TableCell>
-              {dateHeaders.map((d) => (
-                <TableCell key={d}>
-                  {new Date(d).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {employees.map((emp) => {
+      {/* Attendance Details Table */}
+      <Box sx={{
+        backgroundColor: "white",
+        borderRadius: "0.75rem",
+        boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        overflow: "auto"
+      }}>
+        <Box sx={{ 
+          padding: 0, 
+          overflowX: "auto", 
+          width: "100%", 
+          maxWidth: "100%",
+          minWidth: "100%",
+          "&::-webkit-scrollbar": {
+            height: "8px",
+          },
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: "#f1f5f9",
+            borderRadius: "4px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#cbd5e1",
+            borderRadius: "4px",
+            "&:hover": {
+              backgroundColor: "#94a3b8",
+            },
+          },
+        }}>
+          <Table className="hrms-table" sx={{ 
+            minWidth: "auto", 
+            width: "max-content",
+            tableLayout: "fixed"
+          }}>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "#f8fafc" }}>
+                <TableCell sx={{ 
+                  fontWeight: 600, 
+                  color: "#1e293b", 
+                  minWidth: "60px", 
+                  position: "sticky", 
+                  left: 0, 
+                  backgroundColor: "#f8fafc", 
+                  zIndex: 1,
+                  borderBottom: "2px solid #e2e8f0",
+                  fontSize: "0.875rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em"
+                }}>S. No.</TableCell>
+                <TableCell sx={{ 
+                  fontWeight: 600, 
+                  color: "#1e293b", 
+                  minWidth: "120px", 
+                  position: "sticky", 
+                  left: "60px", 
+                  backgroundColor: "#f8fafc", 
+                  zIndex: 1,
+                  borderBottom: "2px solid #e2e8f0",
+                  fontSize: "0.875rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em"
+                }}>Profile</TableCell>
+                <TableCell sx={{ 
+                  fontWeight: 600, 
+                  color: "#1e293b", 
+                  minWidth: "100px", 
+                  position: "sticky", 
+                  left: "180px", 
+                  backgroundColor: "#f8fafc", 
+                  zIndex: 1,
+                  borderBottom: "2px solid #e2e8f0",
+                  fontSize: "0.875rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em"
+                }}>Role</TableCell>
+                <TableCell sx={{ 
+                  fontWeight: 600, 
+                  color: "#1e293b", 
+                  minWidth: "80px", 
+                  position: "sticky", 
+                  left: "280px", 
+                  backgroundColor: "#f8fafc", 
+                  zIndex: 1,
+                  borderBottom: "2px solid #e2e8f0",
+                  fontSize: "0.875rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em"
+                }}>Total</TableCell>
+                {dateHeaders.map((d) => (
+                  <TableCell key={d} sx={{ 
+                    fontWeight: 600, 
+                    color: "#1e293b", 
+                    minWidth: "80px", 
+                    width: "80px",
+                    textAlign: "center",
+                    borderBottom: "2px solid #e2e8f0",
+                    fontSize: "0.875rem",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em"
+                  }}>
+                    {new Date(d).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredEmployees
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((emp, index) => {
               const empRecords = records[emp.name];
               let total = 0;
               dateHeaders.forEach((d) => {
@@ -187,45 +428,75 @@ export default function AttendanceDetails() {
               });
 
               return (
-                <TableRow key={emp.name}>
-                  <TableCell>{emp.name}</TableCell>
-                  <TableCell>{emp.role}</TableCell>
-                  <TableCell>{total}:00</TableCell>
+                <TableRow key={emp.name} sx={{ '&:hover': { backgroundColor: '#f8fafc' } }}>
+                  <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1 }}>{page * rowsPerPage + index + 1}</TableCell>
+                  <TableCell sx={{ position: "sticky", left: "60px", backgroundColor: "white", zIndex: 1 }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                      {emp.name}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ position: "sticky", left: "180px", backgroundColor: "white", zIndex: 1 }}>
+                    <Typography variant="body2" sx={{ color: "#64748b" }}>
+                      {emp.role}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ position: "sticky", left: "280px", backgroundColor: "white", zIndex: 1 }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                      {total}:00
+                    </Typography>
+                  </TableCell>
                   {dateHeaders.map((d) => (
-                    <TableCell key={d}>{empRecords[d] || "0:00"}</TableCell>
+                    <TableCell key={d} sx={{ 
+                      minWidth: "80px", 
+                      width: "80px",
+                      textAlign: "center"
+                    }}>
+                      <Typography variant="body2">
+                        {empRecords[d] || "0:00"}
+                      </Typography>
+                    </TableCell>
                   ))}
                 </TableRow>
               );
             })}
           </TableBody>
         </Table>
-      </TableContainer>
+        </Box>
+      </Box>
 
-      {/* Dialog */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Add Today Attendance</DialogTitle>
-        <DialogContent>
-          {employees.map((emp) => (
-            <Box key={emp.name} mb={2}>
-              <Typography variant="body2" mb={1}>
-                {emp.name}
-              </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Enter hours (e.g., 8:00)"
-                onBlur={(e) => addTodayAttendance(emp.name, e.target.value)}
-              />
-            </Box>
-          ))}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button variant="contained" onClick={() => setOpenDialog(false)}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Pagination */}
+      <Box sx={{ padding: "0.75rem 1rem", borderTop: "1px solid #e5e5e5", backgroundColor: "#fafafa" }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="body2" sx={{ color: "#333", fontWeight: 500, fontSize: "0.875rem" }}>
+            Showing {page * rowsPerPage + 1} to {Math.min((page + 1) * rowsPerPage, filteredEmployees.length)} of {filteredEmployees.length} records
+          </Typography>
+          <Pagination
+            count={Math.ceil(filteredEmployees.length / rowsPerPage)}
+            page={page + 1}
+            onChange={(_, newPage) => setPage(newPage - 1)}
+            color="primary"
+            size="small"
+          />
+        </Stack>
+      </Box>
+
+      {/* Common Dialog */}
+      <CommonDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        dialogTitle="Add Today Attendance"
+        dialogContent={
+          <AddAttendance 
+            employees={employees} 
+            addTodayAttendance={addTodayAttendance} 
+          />
+        }
+        primaryAction={true}
+        primaryActionText="Save"
+        onPrimaryAction={() => setOpenDialog(false)}
+        secondaryActionText="Cancel"
+        maxWidth="sm"
+      />
     </Box>
   );
 }

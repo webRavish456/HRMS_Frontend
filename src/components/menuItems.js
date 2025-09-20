@@ -258,36 +258,54 @@
 
 
 
+import {
+  DashboardOutlined,
+  LocationOnOutlined,
+  WorkOutlineOutlined,
+  AssignmentOutlined,
+  ConfirmationNumberOutlined,
+  PeopleOutlined,
+  BadgeOutlined,
+  AccessTimeOutlined,
+  EventNoteOutlined,
+  AccountBalanceWalletOutlined,
+  TrendingUpOutlined,
+  AssessmentOutlined,
+  AttachMoneyOutlined,
+  ExitToAppOutlined,
+  CardGiftcardOutlined
+} from '@mui/icons-material';
+
 const Menuitems = [
   {
-    icon: '/icons/Dashboard.png',
+    icon: DashboardOutlined,
     label: "Dashboard",
     href: "/dashboard",
   },
   {
-    icon: '/icons/location.png',
+    icon: LocationOnOutlined,
     label: "Branch",
-    href: "/Branch/branch-list",
+    href: "/branch/branch-list",
      item: [
       {
         label: "Branch List",
-        href: "/Branch/branch-list"
+        href: "/branch/branch-list"
       }
       
     ]
   },
   {
-    icon: "/icons/recruitment.png",
+    icon: WorkOutlineOutlined,
     label: "Recruitment",
     href: "/recruitment/job-posting",
     item: [
       {
         label: "Job Posting",
-        href: "recruitment/job-posting"
+        href: "/recruitment/job-posting"
       },
       {
         label: "Job Onboarding",
-        href: 'recruitment/job-onboarding'
+        href: '/recruitment/job-onboarding'
       },
       {
         label: "Offer Letter",
@@ -296,7 +314,7 @@ const Menuitems = [
     ]
   },
   {
-    icon: "/icons/task.png",
+    icon: AssignmentOutlined,
     label: "Task",
     href: "/task/assign-task",
     item: [
@@ -304,68 +322,42 @@ const Menuitems = [
         label: "Assign Task",
         href: "/task/assign-task"
       },
-     
       {
-        label: "to do task",
+        label: "To Do List",
         href: "/task/to-do-task"
       }
     ]
   },
   {
-    icon: "/icons/ticket.png",
+    icon: ConfirmationNumberOutlined,
     label: "Ticket Management",
-    href: "/ticket-Management/all-ticket", 
+    href: "/ticket/allTickets", 
     item: [
       {
-        label: "All Ticket",
-        href: "/ticket-Management/all-ticket"
+        label: "All Tickets",
+        href: "/ticket/allTickets"
       }
     ]
   },
   
   {
-    icon: "/icons/employee.png",
-    label: "Employee Management",
-    href: "/employee-management/employee",
-    item: [
-      {
-        label: "Employee ",
-        href: "/employee-management/employee"
-      },
-      // {
-      //   label: "Add Employee",
-      //   href: '/employee-management/add-employee'
-      // },
-      
-    ]
+    icon: PeopleOutlined,
+    label: "Employee",
+    href: "/employee"
   },
   {
-    icon: "/icons/staff.png",
-    label: "Staff-Management",
-    href: "/staff-management/staff",
-    item: [
-      {
-        label: "Staff",
-        href: "/staff-management/staff"
-      },
-      // {
-      //   label: "Role",
-      //   href: '/staff/role'
-      // },
-      // {
-      //   label: "Employee Profile",
-      //   href: '/staff/employee-profile'
-      // },
-    ]
+    icon: BadgeOutlined,
+    label: "Staff",
+    href: "/staff"
   },
   {
-    icon: "/icons/attendance.png",
+    icon: AccessTimeOutlined,
     label: "Attendance",
-    href: "/attendance/punchIn/punchOut",
+    href: "/attendance/punch",
     item: [
       {
-        label: "PunchIn/ PunchOut",
-        href: "/attendance/punchIn/punchOut"
+        label: "PunchIn/PunchOut",
+        href: "/attendance/punch"
       },
       {
         label: "Daily Logs",
@@ -377,125 +369,104 @@ const Menuitems = [
       },
       {
         label: "Attendance Details",
-        href: "/attendance/attendance-details"
+        href: "/attendance/details"
       },
-      
       {
-        label: " Summary",
+        label: "Summary",
         href: "/attendance/summary"
-      },
+      }
      ]
   },
  {
-    icon: "/icons/leave.png",
-    label: " Leave Management",
-    href: "/leave-management/leave-status",
+    icon: EventNoteOutlined,
+    label: "Leave Management",
+    href: "/leave/leave-status",
     item: [
       {
         label: "Leave Status",
-        href: "/leave-management/leave-status"
+        href: "/leave/leave-status"
       },
       {
         label: "Leave Request",
-        href: "/leave-management/leave-status"
+        href: "/leave/leave-request"
       },
       {
         label: "Holiday",
-        href: "/leave-management/holiday"
-      },
-     
+        href: "/leave/holiday"
+      }
      ]
   },
   {
-    icon: "/icons/payroll.png",
+    icon: AccountBalanceWalletOutlined,
     label: "Payroll Management",
-    href: "/payroll-management/payslip-list",
+    href: "/payroll/payslip-list",
     item: [
       {
         label: "Payslip List",
-        href: "/payroll-management/payslip-list"
+        href: "/payroll/payslip-list"
       },
       {
         label: "Create Payroll",
-        href: "/payroll-management/create-payroll"
+        href: "/payroll/create-payroll"
       },
       {
         label: "Expense",
-        href: "/payroll-management/expense"
-      },
-     
+        href: "/payroll/expense"
+      }
      ]
   },
   {
-    icon: "/icons/performance.png",
+    icon: TrendingUpOutlined,
     label: "Performance",
-    href: "/performance",
-  
+    href: "/performance"
   },
   {
-    icon: "/icons/report-analytics.png",
+    icon: AssessmentOutlined,
     label: "Report Analytics",
-    href: "/report-analytics/employee-report",
+    href: "/report/employee",
     item: [
       {
         label: "Employee Report",
-        href: "/report-analytics/employee-report"
+        href: "/report/employee"
       },
       {
         label: "Income Report",
-        href: "/report-analytics/income-report"
+        href: "/report/income"
       },
       {
         label: "Expense Report",
-        href: "/report-analytics/employee-report"
+        href: "/report/expense"
       },
       {
         label: "Staff Report",
-        href: "/report-analytics/staff-report"
-      },
+        href: "/report/staff"
+      }
      ]
   },
   {
-    icon: "/icons/announcement.png",
-    label: "Announcement",
-    href: "/announcement",
-  
-  },
-{
-    icon: "/icons/expense-management.png",
-    label: "Expense Management",
-    href: "/expense-management/expense",
+    icon: AttachMoneyOutlined,
+    label: "Finance",
+    href: "/finance",
     item: [
+      {
+        label: "Income",
+        href: "/finance/income"
+      },
       {
         label: "Expense",
-        href: "/expense-management/expense"
-      },
-      
+        href: "/finance/expense"
+      }
      ]
-  },
-   {
-    icon: "/icons/exit.png",
-    label: "Exit Management",
-    href: "/exit-management",
-  
-  },
-   {
-    icon: "/icons/rewards.png",
-    label: "Rewards",
-    href: "/rewards",
-  
   },
   {
-    icon: "/icons/setting.png",
-    label: "Setting",
-    href: "/setting/email-setting",
-    item: [
-      {
-        label: "Email Setting",
-        href: "/setting/email-setting"
-      },
-      
-     ]
+    icon: ExitToAppOutlined,
+    label: "Exit Management",
+    href: "/exit"
+  },
+  {
+    icon: CardGiftcardOutlined,
+    label: "Rewards",
+    href: "/rewards"
   },
 ];
 

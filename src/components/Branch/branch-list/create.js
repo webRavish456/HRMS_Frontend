@@ -1,63 +1,109 @@
-
-
-
-"use client"
 import React, { useState } from "react";
-import { Button, TextField, MenuItem } from "@mui/material";
+import {
+  Box,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  Grid,
+} from "@mui/material";
 
 const CreateBranch = ({ handleCreate, handleClose }) => {
-  const [BranchName, setBranchName] = useState("");
-  const [Location, setLocation] = useState("");
-  const [Status, setStatus] = useState("active"); // default active
+  const [formData, setFormData] = useState({
+    branchName: "",
+    branchLocation: "",
+    branchManager: "",
+    contactNumber: "",
+    email: "",
+    status: "Active"
+  });
 
-  const handleSubmit = () => {
-    const newBranch = { BranchName, Location, Status };
-    handleCreate(newBranch);
-
-    // clear form after save
-    setBranchName("");
-    setLocation("");
-    setStatus("active");
-    handleClose();
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
-
   return (
-    <div>
-      <TextField
-        label="Branch Name"
-        fullWidth
-        margin="normal"
-        value={BranchName}
-        onChange={(e) => setBranchName(e.target.value)}
-      />
-      <TextField
-        label="Location"
-        fullWidth
-        margin="normal"
-        value={Location}
-        onChange={(e) => setLocation(e.target.value)}
-      />
-
-      {/* Status Dropdown */}
-      <TextField
-        select
-        label="Status"
-        fullWidth
-        margin="normal"
-        value={Status}
-        onChange={(e) => setStatus(e.target.value)}
-      >
-        <MenuItem value="active">Active</MenuItem>
-        <MenuItem value="inactive">Inactive</MenuItem>
-      </TextField>
-
-      <div style={{ marginTop: "20px", display: "flex", gap: "10px", justifyContent:"flex-end" }}>
-        <Button variant="contained" onClick={handleSubmit}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: "1rem", padding: "1rem 0" }}>
+      <Grid container spacing={2}>
+        <Grid size={{xs:12, md:6}}>
+          <TextField
+            fullWidth
+            label="Branch Name"
+            name="branchName"
+            value={formData.branchName}
+            onChange={handleInputChange}
+            className="hrms-form-input"
+          />
+        </Grid>
+        <Grid size={{xs:12, md:6}}>
+          <TextField
+            fullWidth
+            label="Branch Location"
+            name="branchLocation"
+            value={formData.branchLocation}
+            onChange={handleInputChange}
+            className="hrms-form-input"
+          />
+        </Grid>
+        <Grid size={{xs:12, md:6}}>
+          <TextField
+            fullWidth
+            label="Branch Manager"
+            name="branchManager"
+            value={formData.branchManager}
+            onChange={handleInputChange}
+            className="hrms-form-input"
+          />
+        </Grid>
+        <Grid size={{xs:12, md:6}}>
+          <TextField
+            fullWidth
+            label="Contact Number"
+            name="contactNumber"
+            value={formData.contactNumber}
+            onChange={handleInputChange}
+            className="hrms-form-input"
+          />
+        </Grid>
+        <Grid size={{xs:12, md:6}}>
+          <TextField
+            fullWidth
+            label="Email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            className="hrms-form-input"
+          />
+        </Grid>
+        <Grid size={{xs:12, md:6}}>
+          <FormControl fullWidth>
+            <InputLabel>Status</InputLabel>
+            <Select
+              name="status"
+              value={formData.status}
+              onChange={handleInputChange}
+            >
+              <MenuItem value="Active">Active</MenuItem>
+              <MenuItem value="Inactive">Inactive</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+      <Box sx={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end", marginTop: "1rem" }}>
+        <button className="hrms-btn hrms-btn-secondary" onClick={handleClose}>
+          Cancel
+        </button>
+        <button className="hrms-btn hrms-btn-primary" onClick={() => handleCreate(formData)}>
           Save
-        </Button>
-        <Button onClick={handleClose}>Cancel</Button>
-      </div>
-    </div>
+        </button>
+      </Box>
+    </Box>
   );
 };
+
 export default CreateBranch;

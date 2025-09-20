@@ -1,47 +1,64 @@
 "use client"
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
-import CommonDialog from '@/Component/CommonDialog';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import {TextField, Button, Box, InputAdornment} from '@mui/material';
-import Paper from '@mui/material/Paper';
-import Layout from '@/Component/Layout';
-import { IconButton} from '@mui/material';
-import { DeleteOutline,VisibilityOutlined } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit';
-import ViewPayslipList from '@/Component/payroll/payslip-list/view';
-import SearchIcon from '@mui/icons-material/Search'
-import DeletePayslipList from '@/Component/payroll/payslip-list/delete';
-import EditPayslipList from '@/Component/payroll/payslip-list/edit';
-import CreatePayslipList from '@/Component/payroll/payslip-list/create';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  TextField,
+  Box,
+  Button,
+  InputAdornment,
+  Typography,
+  Pagination,
+  Stack,
+  Chip,
+  Avatar,
+  Card,
+  CardContent,
+  Grid
+} from '@mui/material';
+import {
+  DeleteOutline,
+  VisibilityOutlined,
+  Edit,
+  Search,
+  Download,
+  AccountBalanceWallet,
+  Add
+} from '@mui/icons-material';
+import CommonDialog from '@/components/commonDialog';
 
 
 export default function Paysliplist(){
+  const router = useRouter();
   const [ViewData, setViewData] = useState(null);
   const [editData, setEditData] = useState(null);
   const [openData, setOpenData] = useState(false);
   const [viewShow, setViewShow] = useState(false);
   const [editShow, setEditShow] = useState(false);
   const [deleteShow, setDeleteShow] = useState(false);
-  const [deleteId ,setDeleteId] = useState(null);
-
-  const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState(null);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [rowsPerPage] = useState(10);
 
 
   const handleView = (row) => {
     console.log("row",row)
-    setViewData(row);
-    setViewShow(true);
+    // Navigate to create payroll page with view mode
+    router.push(`/payroll/create-payroll?mode=view&id=${row.id}`);
   };
 
   const handleEdit = (data) => {
-    setEditData(data);
-    setEditShow(true);
+    // Navigate to create payroll page with edit mode
+    router.push(`/payroll/create-payroll?mode=edit&id=${data.id}`);
   };
 
   const handleShowDelete = (id) => {
@@ -75,147 +92,212 @@ export default function Paysliplist(){
 
   
 
-  const  createData=(id, name, days, month, year, bsalary, bonus, tsalary, status)=>{
-    const row={id, name, days, month, year, bsalary, bonus, tsalary, status} ;
-    return{
-      ...row,
-    action:(
+const createData = (id, name, days, month, year, bsalary, bonus, tsalary, status) => {
+  const row = { id, name, days, month, year, bsalary, bonus, tsalary, status };
+  return {
+    ...row,
+    action: (
       <>
-      <IconButton
-      style={{color: "#072eb0" , padding:"4px", transform: "scale(0.8)"}}
-      onClick={()=>handleView(row)}
-      >
-      <VisibilityOutlined/>
-      </IconButton>
-      <IconButton
-      style={{color: "#6b6666" , padding:"4px", transform: "scale(0.8)"}}
-      onClick={()=>handleEdit()}
-      >
-      <EditIcon/>
-      </IconButton>
-      <IconButton
-      style={{color:"#c70f3aff" , padding:"4px", transform: "scale(0.8)"}}
-      onClick={()=>handleShowDelete(id)}
-      >
-      <DeleteOutline/>
-      </IconButton>
+        <IconButton
+          sx={{ color: "#3b82f6", padding: "4px" }}
+          onClick={() => handleView(row)}
+        >
+          <VisibilityOutlined />
+        </IconButton>
+        <IconButton
+          sx={{ color: "#6b7280", padding: "4px" }}
+          onClick={() => handleEdit(row)}
+        >
+          <Edit />
+        </IconButton>
+        <IconButton
+          sx={{ color: "#ef4444", padding: "4px" }}
+          onClick={() => handleShowDelete(id)}
+        >
+          <DeleteOutline />
+        </IconButton>
       </>
-    )}
+    )
   };
+};
 
 
 
 
 const rows = [
-  createData(1,"John Doe", 22, "September", "2025", 50000, 5000, 55000, "Paid"),
-  createData(2,"Jane Smith", 20, "September", "2025", 45000, 4000, 49000, "Pending"),
-  createData(3,"Michael Johnson", 21, "September", "2025", 48000, 3500, 51500, "Paid"),
-  createData(4,"Emily Davis", 22, "September", "2025", 52000, 6000, 58000, "Paid")
+  createData(1, "John Doe", 22, "September", "2025", 50000, 5000, 55000, "Paid"),
+  createData(2, "Jane Smith", 20, "September", "2025", 45000, 4000, 49000, "Pending"),
+  createData(3, "Michael Johnson", 21, "September", "2025", 48000, 3500, 51500, "Paid"),
+  createData(4, "Emily Davis", 22, "September", "2025", 52000, 6000, 58000, "Paid"),
+  createData(5, "Sarah Wilson", 23, "September", "2025", 55000, 7000, 62000, "Paid"),
+  createData(6, "David Brown", 19, "September", "2025", 42000, 3000, 45000, "Pending"),
+  createData(7, "Lisa Garcia", 21, "September", "2025", 47000, 4000, 51000, "Paid"),
+  createData(8, "Robert Lee", 22, "September", "2025", 51000, 5500, 56500, "Paid")
 ];
 
+const filteredRows = rows.filter(row =>
+  row.name.toLowerCase().includes(search.toLowerCase()) ||
+  row.status.toLowerCase().includes(search.toLowerCase()) ||
+  row.month.toLowerCase().includes(search.toLowerCase())
+);
+
+const startIndex = (page - 1) * rowsPerPage;
+const endIndex = startIndex + rowsPerPage;
+const paginatedRows = filteredRows.slice(startIndex, endIndex);
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'Paid': return 'hrms-badge-success';
+    case 'Pending': return 'hrms-badge-warning';
+    case 'Overdue': return 'hrms-badge-error';
+    default: return 'hrms-badge-neutral';
+  }
+};
+
   return (
-    <Layout>
-  <div>
-   <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems:"center", gap:"10px", mb: 2 }}>
-   <TextField
-    label="Search"
-    variant="outlined"
-    size="small"
-    sx={{
-      width:"400px",
-      "&.MuiOutlinedInput-root":{mr:2, 
-      borderRadius:"30px"
-     }}}
-     InputProps={{
-      endAdornment:(
-        <InputAdornment position='end'>
-          <SearchIcon color="action"/>
-        </InputAdornment>
-      )
-     }}
-  />
-   <Button variant="contained" color="primary" onClick={()=>setOpenData(true)}  sx={{borderRadius:"20px", backgroundColor:"#223e38ff",px:3}}>
-    + Add Payslip
-   </Button>
-   </Box>
-     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow className='theading'>
-            <TableCell sx={{fontWeight:"600"}}>Id</TableCell>
-            <TableCell align="right" sx={{fontWeight:"600"}}>NAME</TableCell>
-            <TableCell align="right" sx={{fontWeight:"600"}}>WORK DAYS</TableCell>
-            <TableCell align="right" sx={{fontWeight:"600"}}>MONTH</TableCell>
-            <TableCell align="right" sx={{fontWeight:"600"}}>YEAR</TableCell>
-            <TableCell align="right" sx={{fontWeight:"600"}}>BASIC SALARY</TableCell>
-            <TableCell align="right" sx={{fontWeight:"600"}}>BONUS</TableCell>
-            <TableCell align="right" sx={{fontWeight:"600"}}>TOTAL SALARY</TableCell>
-            <TableCell align="right" sx={{fontWeight:"600"}}>STATUS</TableCell>
-            <TableCell align="right" sx={{fontWeight:"600"}}>ACTION</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.id}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.id}
-              </TableCell>
-              <TableCell align="right">{row.name}</TableCell>
-              <TableCell align="right">{row.days}</TableCell>
-              <TableCell align="right">{row.month}</TableCell>
-              <TableCell align="right">{row.year}</TableCell>
-              <TableCell align="right">{row.bsalary}</TableCell>
-              <TableCell align="right">{row.bonus}</TableCell>
-              <TableCell align="right">{row.tsalary}</TableCell>
-              <TableCell sx={{color:row.status==="Paid" ? "green": row.status==="Pending"? "grey": "red", fontWeight:"600"}} align="right">{row.status}</TableCell>
-              <TableCell align="right" >{row.action}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-
-    <CommonDialog
-          open={openData || viewShow || editShow || deleteShow}
-          onClose={handleClose}
-          dialogTitle={
-            openData
-              ? "Create New PaySlip"
-              : viewShow
-              ? "View PaySlip"
-              : editShow
-              ? "Edit PaySlip"
-              : deleteShow
-              ? "Delete PaySlip"
-              : ""
-          }
-
-          dialogContent={
-            openData ? (
-              <CreatePayslipList open={openData}  handleClose={handleClose} />
-            ) : viewShow ? (
-              <ViewPayslipList viewData={ViewData} handleClose={handleClose}  />
-            ) : editShow ? (
-              <EditPayslipList
-                editData={editData}
-                handleUpdate={handleUpdate}
-                handleClose={handleClose}
-              />
-            ) : deleteShow ? (
-              <DeletePayslipList
-                handleDelete={handleDelete}
-                // isDeleting={isDeleting}
-                handleClose={handleClose}
-              />
-            ) : null
-          }
+    <Box sx={{ padding: "0.5rem" }}>
+      {/* Search and Create Button */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
+        <TextField
+          placeholder="Search payslips..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ width: "300px", "& .MuiOutlinedInput-root": { height: "40px" } }}
         />
+        <button 
+          className="hrms-btn hrms-btn-primary hrms-btn-fixed-height"
+          onClick={() => router.push('/payroll/create-payroll')}
+        >
+          <Add />
+          Add Payslip
+        </button>
+      </Box>
 
-  
-  </div>
-  </Layout>
-  )
+      {/* Payslip Table */}
+      <Box className="hrms-card">
+        <Box className="hrms-card-content" sx={{ padding: 0 }}>
+          <Table className="hrms-table">
+            <TableHead>
+              <TableRow>
+                <TableCell>S. No.</TableCell>
+                <TableCell>Employee</TableCell>
+                <TableCell>Work Days</TableCell>
+                <TableCell>Month</TableCell>
+                <TableCell>Year</TableCell>
+                <TableCell>Basic Salary</TableCell>
+                <TableCell>Bonus</TableCell>
+                <TableCell>Total Salary</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedRows.map((row, index) => (
+                <TableRow key={row.id}>
+                  <TableCell>{startIndex + index + 1}</TableCell>
+                  <TableCell>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Avatar sx={{ width: 24, height: 24, fontSize: "0.75rem" }}>
+                        {row.name.split(' ').map(n => n[0]).join('')}
+                      </Avatar>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                        {row.name}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>{row.days}</TableCell>
+                  <TableCell>{row.month}</TableCell>
+                  <TableCell>{row.year}</TableCell>
+                  <TableCell sx={{ fontWeight: 500 }}>₹{row.bsalary.toLocaleString()}</TableCell>
+                  <TableCell sx={{ fontWeight: 500 }}>₹{row.bonus.toLocaleString()}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>₹{row.tsalary.toLocaleString()}</TableCell>
+                  <TableCell>
+                    <Box className={`hrms-badge ${getStatusColor(row.status)}`}>
+                      {row.status}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: "flex", gap: "0.25rem" }}>
+                      <IconButton 
+                        size="small"
+                        onClick={() => handleView(row)}
+                        sx={{ color: "#1976D2", fontSize: "16px" }}
+                      >
+                        <VisibilityOutlined />
+                      </IconButton>
+                      <IconButton 
+                        size="small"
+                        onClick={() => handleEdit(row)}
+                        sx={{ color: "#000", fontSize: "16px" }}
+                      >
+                        <Edit />
+                      </IconButton>
+                      <IconButton 
+                        size="small"
+                        onClick={() => handleShowDelete(row.id)}
+                        sx={{ color: "#d32f2f", fontSize: "16px" }}
+                      >
+                        <DeleteOutline />
+                      </IconButton>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+        <Box sx={{ padding: "0.75rem 1rem", borderTop: "1px solid #e5e5e5", backgroundColor: "#fafafa" }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="body2" sx={{ color: "#333", fontWeight: 500, fontSize: "0.875rem" }}>
+              Showing {startIndex + 1} to {Math.min(endIndex, filteredRows.length)} of {filteredRows.length} records
+            </Typography>
+            <Pagination
+              count={Math.ceil(filteredRows.length / rowsPerPage)}
+              page={page}
+              onChange={(event, value) => setPage(value)}
+              color="primary"
+            />
+          </Stack>
+        </Box>
+      </Box>
+
+      <CommonDialog
+        open={openData || viewShow || editShow || deleteShow}
+        onClose={handleClose}
+        dialogTitle={
+          openData
+            ? "Create New PaySlip"
+            : viewShow
+            ? "View PaySlip"
+            : editShow
+            ? "Edit PaySlip"
+            : deleteShow
+            ? "Delete PaySlip"
+            : ""
+        }
+        dialogContent={
+          <Box sx={{ padding: 2 }}>
+            {openData && (
+              <Typography variant="body1">
+                Create new payslip functionality will be implemented here.
+              </Typography>
+            )}
+            
+            {deleteShow && (
+              <Typography variant="body1">
+                Are you sure you want to delete this payslip?
+              </Typography>
+            )}
+          </Box>
+        }
+      />
+    </Box>
+  );
 }

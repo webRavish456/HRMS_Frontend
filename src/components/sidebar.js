@@ -3,9 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
-import { ChevronDown } from "lucide-react";
-import MenuItems from "./MenuItems";
+import { KeyboardArrowDown } from "@mui/icons-material";
+import MenuItems from "./menuItems";
 
 const Sidebar = () => {
   const pathname = usePathname();
@@ -42,14 +41,19 @@ const Sidebar = () => {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        {/* keep your image name/link unchanged */}
-        <Image
-          src="/Venturing.jpg"
-          alt="VED VENTURING DIGITALLY"
-          width={200}
-          height={40}
-          style={{ width: '200px', height: 'auto', display: 'block', margin: '0 auto' }}
-        />
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          height: '100%',
+          color: 'white',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          textAlign: 'center'
+        }}>
+          VED VENTURING<br />
+          DIGITALLY
+        </div>
       </div>
 
       <nav className="menu-container">
@@ -62,28 +66,25 @@ const Sidebar = () => {
                 <div className="menu-link" onClick={() => toggleMenu(index)}>
                   <div className="menu-left">
                     {item.icon && (
-                      <Image
-                        src={item.icon}
-                        alt={item.label}
-                        width={20}
-                        height={20}
+                      <item.icon
                         className="menu-icon"
+                        style={{ fontSize: '20px', marginRight: '12px' }}
                       />
                     )}
                     <span className="menu-label">{item.label}</span>
                   </div>
-                  <ChevronDown className={`menu-arrow ${isOpen ? "active" : ""}`} />
+                  <KeyboardArrowDown className={`menu-arrow ${isOpen ? "active" : ""}`} />
                 </div>
               ) : (
-                <Link href={item.href} className="menu-link">
+                <Link 
+                  href={item.href} 
+                  className={`menu-link ${pathname === item.href ? "active" : ""}`}
+                >
                   <div className="menu-left">
                     {item.icon && (
-                      <Image
-                        src={item.icon}
-                        alt={item.label}
-                        width={20}
-                        height={20}
+                      <item.icon
                         className="menu-icon"
+                        style={{ fontSize: '20px', marginRight: '12px' }}
                       />
                     )}
                     <span className="menu-label">{item.label}</span>
@@ -113,4 +114,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-

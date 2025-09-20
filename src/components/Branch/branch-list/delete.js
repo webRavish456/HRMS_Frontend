@@ -1,24 +1,26 @@
 import React from "react";
-import { Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+} from "@mui/material";
 
-const DeleteBranch = ({ handleDelete, isDeleting, handleClose }) => {
+const DeleteBranch = ({ selectedBranch, handleDelete, handleClose }) => {
   return (
-    <div>
-      <p>Are you sure you want to delete this branch?</p>
-      <div style={{ marginTop: "20px", display: "flex", gap: "10px", justifyContent:"flex-end" }}>
-        <Button
-          variant="contained"
-          color="error"
-          onClick={handleDelete}
-          disabled={isDeleting}
-        >
-          {isDeleting ? "Deleting..." : "Yes, Delete"}
-        </Button>
-        <Button onClick={handleClose}>Cancel</Button>
-      </div>
-    </div>
+    <Box>
+      <Typography>
+        Are you sure you want to delete the branch "{selectedBranch?.branchName}"?
+      </Typography>
+      <Box sx={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end", marginTop: "1rem" }}>
+        <button className="hrms-btn hrms-btn-secondary" onClick={handleClose}>
+          Cancel
+        </button>
+        <button className="hrms-btn hrms-btn-error" onClick={handleDelete}>
+          Delete
+        </button>
+      </Box>
+    </Box>
   );
 };
 
 export default DeleteBranch;
-

@@ -1,607 +1,466 @@
 "use client";
-import * as React from "react";
-import {
-  Stack, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, IconButton,
-  Button, Dialog, DialogTitle, DialogContent,
-  DialogActions, TextField, Typography
-} from "@mui/material";
-import { Visibility, Edit, Delete } from "@mui/icons-material";
 
-export default function PunchLog() {
-  const [rows, setRows] = React.useState([
-    { title: "Morning Shift", start: "2025-08-01 09:00 AM", end: "2025-08-01 05:00 PM", desc: "Regular working hours" },
-    { title: "Late Entry", start: "2025-08-02 10:00 AM", end: "2025-08-02 06:30 PM", desc: "Traffic delay" },
-    { title: "Half Day", start: "2025-08-03 09:00 AM", end: "2025-08-03 01:00 PM", desc: "Personal work" },
-    { title: "Overtime", start: "2025-08-04 09:00 AM", end: "2025-08-04 08:00 PM", desc: "Extra workload" },
-    { title: "Remote Work", start: "2025-08-05 09:30 AM", end: "2025-08-05 06:00 PM", desc: "Work from home" },
-    { title: "Morning Shift", start: "2025-08-01 09:00 AM", end: "2025-08-01 05:00 PM", desc: "Regular working hours" },
-    { title: "Overtime", start: "2025-08-04 09:00 AM", end: "2025-08-04 08:00 PM", desc: "Extra workload" },
-    { title: "Remote Work", start: "2025-08-05 09:30 AM", end: "2025-08-05 06:00 PM", desc: "Work from home" },
-    { title: "Half Day", start: "2025-08-03 09:00 AM", end: "2025-08-03 01:00 PM", desc: "Personal work" },
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
+import {
+  AccessTime,
+  Login,
+  Logout,
+  Schedule,
+  LocationOn,
+  CheckCircle,
+} from "@mui/icons-material";
+import PunchConfirmation from "../../../components/Attendance/punch/PunchConfirmation";
+import CommonDialog from "../../../components/commonDialog";
+
+const AttendancePunchPage = () => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [punchRecords, setPunchRecords] = useState([
+    {
+      id: "PCH001",
+      date: "2024-01-28",
+      punchIn: "09:00:00",
+      punchOut: "18:00:00",
+      totalHours: "9h 0m",
+      status: "Present",
+      location: "Office"
+    },
+    {
+      id: "PCH002",
+      date: "2024-01-27",
+      punchIn: "09:15:00",
+      punchOut: "17:45:00",
+      totalHours: "8h 30m",
+      status: "Present",
+      location: "Office"
+    },
+    {
+      id: "PCH003",
+      date: "2024-01-26",
+      punchIn: "09:30:00",
+      punchOut: null,
+      totalHours: "In Progress",
+      status: "Present",
+      location: "Office"
+    }
   ]);
 
-  const [open, setOpen] = React.useState(false);
-  const [viewOpen, setViewOpen] = React.useState(false);
-  const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const [isPunchedIn, setIsPunchedIn] = useState(false);
+  const [punchDialog, setPunchDialog] = useState(false);
+  const [punchType, setPunchType] = useState("");
 
-  const [editingIndex, setEditingIndex] = React.useState(null);
-  const [deleteIndex, setDeleteIndex] = React.useState(null);
+  // Update current time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
 
-  const [form, setForm] = React.useState({ title: "", start: "", end: "", desc: "" });
-  const [viewData, setViewData] = React.useState(null);
+    return () => clearInterval(timer);
+  }, []);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handlePunch = (type) => {
+    setPunchType(type);
+    setPunchDialog(true);
+  };
 
-  const handleAdd = () => {
-    if (editingIndex !== null) {
-      const updated = [...rows];
-      updated[editingIndex] = form;
-      setRows(updated);
+  const confirmPunch = () => {
+    const now = new Date();
+    const timeString = now.toTimeString().split(' ')[0];
+    const dateString = now.toISOString().split('T')[0];
+
+    if (punchType === "in") {
+      const newRecord = {
+        id: `PCH${String(punchRecords.length + 1).padStart(3, '0')}`,
+        date: dateString,
+        punchIn: timeString,
+        punchOut: null,
+        totalHours: "In Progress",
+        status: "Present",
+        location: "Office"
+      };
+      setPunchRecords([newRecord, ...punchRecords]);
+      setIsPunchedIn(true);
     } else {
-      setRows([...rows, form]);
+      // Update the latest record with punch out
+      const updatedRecords = [...punchRecords];
+      const latestRecord = updatedRecords.find(record => !record.punchOut);
+      if (latestRecord) {
+        latestRecord.punchOut = timeString;
+        const punchInTime = new Date(`${latestRecord.date} ${latestRecord.punchIn}`);
+        const punchOutTime = new Date(`${latestRecord.date} ${timeString}`);
+        const diffMs = punchOutTime - punchInTime;
+        const hours = Math.floor(diffMs / (1000 * 60 * 60));
+        const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        latestRecord.totalHours = `${hours}h ${minutes}m`;
+      }
+      setPunchRecords(updatedRecords);
+      setIsPunchedIn(false);
     }
-    setForm({ title: "", start: "", end: "", desc: "" });
-    setEditingIndex(null);
-    setOpen(false);
+    setPunchDialog(false);
   };
 
-  const handleView = (row) => { setViewData(row); setViewOpen(true); };
-  const handleEdit = (row, index) => { setForm(row); setEditingIndex(index); setOpen(true); };
-
-  const handleDeleteClick = (index) => {
-    setDeleteIndex(index);
-    setDeleteOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (deleteIndex !== null) {
-      setRows(rows.filter((_, i) => i !== deleteIndex));
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Present': return 'hrms-badge-success';
+      case 'Late': return 'hrms-badge-warning';
+      case 'Absent': return 'hrms-badge-error';
+      default: return 'hrms-badge-neutral';
     }
-    setDeleteIndex(null);
-    setDeleteOpen(false);
   };
 
   return (
-    <div style={{ width: "100%", overflowX: "auto" }}>
-      {/* Add Entry Button */}
-      {/* <Box display="flex" justifyContent="flex-end" mb={1}>
-        <Button
-          variant="contained"
-          onClick={() => { setOpen(true); setEditingIndex(null); }}
-        >
-          Add Punch Log
-        </Button>
-      </Box> */}
-      {/* Header */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h6" fontWeight="bold">
-          PunchIn/PunchOut
+    <Box sx={{ padding: "1rem", backgroundColor: "#f8fafc", minHeight: "100vh" }}>
+      {/* Page Header */}
+      <Box sx={{ marginBottom: "2rem" }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: "#1e293b", marginBottom: "0.5rem" }}>
+          Punch-In / Punch-Out
         </Typography>
-        <Button
-        variant="contained"
-        onClick={() => { setOpen(true); setEditingIndex(null); }}
-      >
-        Add Attendance
-      </Button>
-      </Stack>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: "#374151" }}>
+            Good Morning, Super Admin
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <Typography variant="body1" sx={{ color: "#64748b" }}>
+            It's {currentTime.toLocaleTimeString()} (Asia/Calcutta)
+          </Typography>
+        </Box>
+        <Typography variant="body1" sx={{ color: "#64748b" }}>
+          You are today!
+        </Typography>
+      </Box>
 
-      {/* Table */}
-      <TableContainer component={Paper} sx={{ width: "100%",height:"490px" }}>
-        <Table size="small" sx={{ width: "100%" }}>
-          <TableHead>
-            <TableRow sx={{ background: "#000" }}>
-              {["Title", "Start date", "End date", "Description", "Actions"].map(h => (
-                <TableCell key={h} sx={{ color: "#fff", fontSize: 13, p: 1 }}>{h}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((r, i) => (
-              <TableRow key={i} sx={{ "&:nth-of-type(odd)": { background: "#f5f5f5" } }}>
-                {[r.title, r.start, r.end, r.desc].map((v, j) => (
-                  <TableCell key={j} sx={{ fontSize: 12, p: 1 }}>{v}</TableCell>
-                ))}
-                <TableCell sx={{ p: 1 }}>
-                  <IconButton size="small" color="primary" onClick={() => handleView(r)}>
-                    <Visibility fontSize="small" />
-                  </IconButton>
-                  <IconButton size="small" color="secondary" onClick={() => handleEdit(r, i)}>
-                    <Edit fontSize="small" />
-                  </IconButton>
-                  <IconButton size="small" color="error" onClick={() => handleDeleteClick(i)}>
-                    <Delete fontSize="small" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
 
-      {/* Dialog for Adding/Editing */}
-      <Dialog 
-        open={open} 
-        onClose={() => setOpen(false)} 
-        sx={{ "& .MuiDialog-paper": { width: 600, height: 450, maxWidth: 600 } }}
-      >
-        <DialogTitle sx={{marginBottom:"20px",color:"red"}}>{editingIndex !== null ? "Edit Punch Log" : "Add Punch Log"}</DialogTitle>
-        <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1, overflowY: "auto",marginBottom:"10px" }}>
-          {[
-            { name: "title", label: "Title" },
-            { name: "start", label: "Start date" },
-            { name: "end", label: "End date" },
-            { name: "desc", label: "Description" }
-          ].map((f) => (
-            <TextField
-              key={f.name}
-              name={f.name}
-              label={f.label}
-              value={form[f.name]}
-              onChange={handleChange}
-              size="small"
-              fullWidth
-            />
-          ))}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleAdd}>
-            {editingIndex !== null ? "Update" : "Add"}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Main Content Grid */}
+      <Grid container spacing={3}>
+        {/* Left Column - Punch Status & Leave Info */}
+        <Grid size={{xs:12, lg:8}}>
+          {/* Punch Status Cards */}
+          <Grid container spacing={2} sx={{ marginBottom: "2rem" }}>
+            <Grid size={{xs:12, sm:6}}>
+              <Card sx={{ 
+                borderRadius: "12px", 
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                border: "1px solid #e2e8f0"
+              }}>
+                <CardContent sx={{ textAlign: "center", padding: "1.5rem" }}>
+                  <Box sx={{ 
+                    backgroundColor: "#f0f9ff", 
+                    borderRadius: "50%", 
+                    width: "60px", 
+                    height: "60px", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    margin: "0 auto 1rem" 
+                  }}>
+                    <Login sx={{ fontSize: 30, color: "#0ea5e9" }} />
+                  </Box>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: "#1e293b", marginBottom: "0.5rem" }}>
+                    {isPunchedIn ? "09:00 AM" : "Not Yet"}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "#64748b" }}>
+                    Punch in time
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            
+            <Grid size={{xs:12, sm:6}}>
+              <Card sx={{ 
+                borderRadius: "12px", 
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                border: "1px solid #e2e8f0"
+              }}>
+                <CardContent sx={{ textAlign: "center", padding: "1.5rem" }}>
+                  <Box sx={{ 
+                    backgroundColor: "#fef3c7", 
+                    borderRadius: "50%", 
+                    width: "60px", 
+                    height: "60px", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    margin: "0 auto 1rem" 
+                  }}>
+                    <Logout sx={{ fontSize: 30, color: "#f59e0b" }} />
+                  </Box>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: "#1e293b", marginBottom: "0.5rem" }}>
+                    {isPunchedIn ? "Not Yet" : "06:00 PM"}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "#64748b" }}>
+                    Punch out time
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
 
-      {/* Dialog for Viewing */}
-      <Dialog 
-        open={viewOpen} 
-        onClose={() => setViewOpen(false)} 
-        sx={{ "& .MuiDialog-paper": { width: 500, height: 350, maxWidth: 500 } }}
-      >
-        <DialogTitle>View Punch Log</DialogTitle>
-        <DialogContent sx={{ overflowY: "auto" }}>
-          {viewData && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              {Object.entries(viewData).map(([k, v]) => (
-                <Typography key={k}><b>{k}:</b> {v}</Typography>
-              ))}
-            </div>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setViewOpen(false)}>Close</Button>
-        </DialogActions>
-      </Dialog>
+          {/* Leave Information */}
+          <Card sx={{ 
+            borderRadius: "12px", 
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            marginBottom: "2rem"
+          }}>
+            <CardContent sx={{ padding: "1.5rem" }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: "#1e293b", marginBottom: "1.5rem" }}>
+                Leave Information
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid size={{xs:12, sm:6, md:3}}>
+                  <Box sx={{ textAlign: "center", padding: "1rem", backgroundColor: "#f8fafc", borderRadius: "8px" }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: "#1e293b", marginBottom: "0.5rem" }}>
+                      12
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#64748b", marginBottom: "0.5rem" }}>
+                      Total leave allowance
+                    </Typography>
+                    <Box sx={{ display: "flex", justifyContent: "center", gap: "1rem" }}>
+                      <Chip label="CL - 6" size="small" sx={{ backgroundColor: "#dbeafe", color: "#1e40af" }} />
+                      <Chip label="SL - 6" size="small" sx={{ backgroundColor: "#dcfce7", color: "#166534" }} />
+                    </Box>
+                  </Box>
+                </Grid>
+                
+                <Grid size={{xs:12, sm:6, md:3}}>
+                  <Box sx={{ textAlign: "center", padding: "1rem", backgroundColor: "#f8fafc", borderRadius: "8px" }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: "#1e293b", marginBottom: "0.5rem" }}>
+                      2
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#64748b", marginBottom: "0.5rem", whiteSpace: "nowrap" }}>
+                      Leave taken
+                    </Typography>
+                    <Box sx={{ display: "flex", justifyContent: "center", gap: "1rem" }}>
+                      <Chip label="Paid - 2" size="small" sx={{ backgroundColor: "#dbeafe", color: "#1e40af" }} />
+                      <Chip label="Unpaid - 0" size="small" sx={{ backgroundColor: "#dcfce7", color: "#166534" }} />
+                    </Box>
+                  </Box>
+                </Grid>
+                
+                <Grid size={{xs:12, sm:6, md:3}}>
+                  <Box sx={{ textAlign: "center", padding: "1rem", backgroundColor: "#f8fafc", borderRadius: "8px" }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: "#1e293b", marginBottom: "0.5rem" }}>
+                      10
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#64748b", marginBottom: "0.5rem" }}>
+                      Total leave available
+                    </Typography>
+                    <Box sx={{ display: "flex", justifyContent: "center", gap: "1rem" }}>
+                      <Chip label="CL - 4" size="small" sx={{ backgroundColor: "#dbeafe", color: "#1e40af" }} />
+                      <Chip label="SL - 6" size="small" sx={{ backgroundColor: "#dcfce7", color: "#166534" }} />
+                    </Box>
+                  </Box>
+                </Grid>
+                
+                <Grid size={{xs:12, sm:6, md:3}}>
+                  <Box sx={{ textAlign: "center", padding: "1rem", backgroundColor: "#f8fafc", borderRadius: "8px" }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: "#1e293b", marginBottom: "0.5rem" }}>
+                      0
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#64748b", marginBottom: "0.5rem" }}>
+                      Leave request pending
+                    </Typography>
+                    <Box sx={{ display: "flex", justifyContent: "center", gap: "1rem" }}>
+                      <Chip label="Paid - 0" size="small" sx={{ backgroundColor: "#dbeafe", color: "#1e40af" }} />
+                      <Chip label="Unpaid - 0" size="small" sx={{ backgroundColor: "#dcfce7", color: "#166534" }} />
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog 
-        open={deleteOpen} 
-        onClose={() => setDeleteOpen(false)} 
-        sx={{ "& .MuiDialog-paper": { width: 500, height: 170, maxWidth: 500 } }}
-      >
-        <DialogTitle>Are you sure?</DialogTitle>
-        <DialogContent sx={{ display: "flex",justifyContent: "center", flexGrow: 1 }}>
-          <Typography>This action will permanently delete this record.</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-          <Button variant="contained" color="error" onClick={handleConfirmDelete}>Delete</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+          {/* Recent Punch Records */}
+          <Card sx={{ 
+            borderRadius: "12px", 
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+          }}>
+            <CardContent sx={{ padding: "1.5rem" }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: "#1e293b", marginBottom: "1.5rem" }}>
+                Recent Punch Records
+              </Typography>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600, color: "#374151" }}>Date</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: "#374151" }}>Punch In</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: "#374151" }}>Punch Out</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: "#374151" }}>Total Hours</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: "#374151" }}>Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {punchRecords.slice(0, 5).map((record) => (
+                      <TableRow key={record.id} sx={{ '&:hover': { backgroundColor: '#f8fafc' } }}>
+                        <TableCell>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                            {new Date(record.date).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                            <Login sx={{ fontSize: 16, color: "#10b981" }} />
+                            <Typography>{record.punchIn}</Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          {record.punchOut ? (
+                            <Box sx={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                              <Logout sx={{ fontSize: 16, color: "#ef4444" }} />
+                              <Typography>{record.punchOut}</Typography>
+                            </Box>
+                          ) : (
+                            <Typography sx={{ color: "#666", fontStyle: "italic" }}>
+                              In Progress
+                            </Typography>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                            {record.totalHours}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Chip 
+                            label={record.status} 
+                            size="small" 
+                            sx={{ 
+                              backgroundColor: record.status === 'Present' ? '#dcfce7' : '#fef3c7',
+                              color: record.status === 'Present' ? '#166534' : '#92400e'
+                            }} 
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Right Column - Time Log */}
+        <Grid size={{xs:12, lg:4}}>
+          <Card sx={{ 
+            borderRadius: "12px", 
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            height: "fit-content"
+          }}>
+            <CardContent sx={{ padding: "1.5rem" }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: "#1e293b", marginBottom: "1.5rem" }}>
+                Time Log
+              </Typography>
+              
+              {/* Today */}
+              <Box sx={{ marginBottom: "2rem" }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: "#374151", marginBottom: "1rem" }}>
+                  Today
+                </Typography>
+                <Box sx={{ backgroundColor: "#f8fafc", padding: "1rem", borderRadius: "8px" }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                    <Typography variant="body2" sx={{ color: "#64748b" }}>9h 0m 0s</Typography>
+                    <Typography variant="body2" sx={{ color: "#64748b" }}>Scheduled</Typography>
+                  </Box>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                    <Typography variant="body2" sx={{ color: "#64748b" }}>00:00</Typography>
+                    <Typography variant="body2" sx={{ color: "#64748b" }}>Worked</Typography>
+                  </Box>
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Typography variant="body2" sx={{ color: "#64748b" }}>00:00</Typography>
+                    <Typography variant="body2" sx={{ color: "#64748b" }}>Break</Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* This Month */}
+              <Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: "#374151", marginBottom: "1rem" }}>
+                  This Month
+                </Typography>
+                <Box sx={{ backgroundColor: "#f8fafc", padding: "1rem", borderRadius: "8px" }}>
+                  <Box sx={{ marginBottom: "1rem" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                      <AccessTime sx={{ fontSize: 16, color: "#64748b" }} />
+                      <Typography variant="body2" sx={{ color: "#64748b" }}>Total Schedule time</Typography>
+                    </Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: "#1e293b" }}>180h 0m</Typography>
+                  </Box>
+                  
+                  <Box sx={{ marginBottom: "1rem" }}>
+                    <Typography variant="body2" sx={{ color: "#64748b", marginBottom: "0.5rem" }}>Worked time</Typography>
+                    <Box sx={{ backgroundColor: "#e2e8f0", borderRadius: "4px", height: "8px", marginBottom: "0.5rem" }}>
+                      <Box sx={{ backgroundColor: "#3b82f6", height: "100%", width: "75%", borderRadius: "4px" }}></Box>
+                    </Box>
+                    <Typography variant="body2" sx={{ color: "#64748b" }}>135h 0m</Typography>
+                  </Box>
+                  
+                  <Box sx={{ marginBottom: "1rem" }}>
+                    <Typography variant="body2" sx={{ color: "#64748b", marginBottom: "0.5rem" }}>Shortage time</Typography>
+                    <Box sx={{ backgroundColor: "#e2e8f0", borderRadius: "4px", height: "8px", marginBottom: "0.5rem" }}>
+                      <Box sx={{ backgroundColor: "#f59e0b", height: "100%", width: "25%", borderRadius: "4px" }}></Box>
+                    </Box>
+                    <Typography variant="body2" sx={{ color: "#64748b" }}>45h 0m</Typography>
+                  </Box>
+                  
+                  <Box>
+                    <Typography variant="body2" sx={{ color: "#64748b", marginBottom: "0.5rem" }}>Over time</Typography>
+                    <Box sx={{ backgroundColor: "#e2e8f0", borderRadius: "4px", height: "8px", marginBottom: "0.5rem" }}>
+                      <Box sx={{ backgroundColor: "#10b981", height: "100%", width: "10%", borderRadius: "4px" }}></Box>
+                    </Box>
+                    <Typography variant="body2" sx={{ color: "#64748b" }}>18h 0m</Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Common Dialog */}
+      <CommonDialog
+        open={punchDialog}
+        onClose={() => setPunchDialog(false)}
+        dialogTitle={`Confirm ${punchType === "in" ? "Punch In" : "Punch Out"}`}
+        dialogContent={
+          <PunchConfirmation 
+            punchType={punchType}
+            currentTime={currentTime}
+            location="Office, Mumbai, Maharashtra"
+          />
+        }
+        primaryAction={true}
+        primaryActionText={`Confirm ${punchType === "in" ? "Punch In" : "Punch Out"}`}
+        onPrimaryAction={confirmPunch}
+        secondaryActionText="Cancel"
+        primaryActionColor={punchType === "in" ? "success" : "error"}
+        maxWidth="sm"
+      />
+    </Box>
   );
-}
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// "use client";
-// import * as React from "react";
-// import {
-//   Box,Table, TableBody, TableCell, TableContainer,
-//   TableHead, TableRow, Paper, IconButton,
-//   Button, Dialog, DialogTitle, DialogContent,
-//   DialogActions, TextField, Typography
-// } from "@mui/material";
-// import { Visibility, Edit, Delete } from "@mui/icons-material";
-
-// export default function PunchLog() {
-//   const [rows, setRows] = React.useState([
-//     { title: "Morning Shift", start: "2025-08-01 09:00 AM", end: "2025-08-01 05:00 PM", desc: "Regular working hours" },
-//     { title: "Late Entry", start: "2025-08-02 10:00 AM", end: "2025-08-02 06:30 PM", desc: "Traffic delay" },
-//     { title: "Half Day", start: "2025-08-03 09:00 AM", end: "2025-08-03 01:00 PM", desc: "Personal work" },
-//     { title: "Overtime", start: "2025-08-04 09:00 AM", end: "2025-08-04 08:00 PM", desc: "Extra workload" },
-//     { title: "Remote Work", start: "2025-08-05 09:30 AM", end: "2025-08-05 06:00 PM", desc: "Work from home" },
-//   ]);
-
-//   const [open, setOpen] = React.useState(false);
-//   const [viewOpen, setViewOpen] = React.useState(false);
-//   const [editingIndex, setEditingIndex] = React.useState(null);
-//   const [form, setForm] = React.useState({ title: "", start: "", end: "", desc: "" });
-//   const [viewData, setViewData] = React.useState(null);
-
-//   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
-//   const handleAdd = () => {
-//     if (editingIndex !== null) {
-//       const updated = [...rows];
-//       updated[editingIndex] = form;
-//       setRows(updated);
-//     } else {
-//       setRows([...rows, form]);
-//     }
-//     setForm({ title: "", start: "", end: "", desc: "" });
-//     setEditingIndex(null);
-//     setOpen(false);
-//   };
-
-//   const handleView = (row) => { setViewData(row); setViewOpen(true); };
-//   const handleEdit = (row, index) => { setForm(row); setEditingIndex(index); setOpen(true); };
-//   const handleDelete = (index) => setRows(rows.filter((_, i) => i !== index));
-
-//   return (
-//     <div style={{ width: "100%", overflowX: "auto" }}>
-//       {/* Add Entry Button */}
-//       <Box display="flex" justifyContent="flex-end" mb={1}>
-//       <Button
-//         variant="contained"
-//         onClick={() => { setOpen(true); setEditingIndex(null); }}
-//       >
-//         Add Punch Log
-//       </Button>
-//       </Box>
-
-//       {/* Table */}
-//       <TableContainer component={Paper} sx={{ width: "100%" }}>
-//         <Table size="small" sx={{ width: "100%" }}>
-//           <TableHead>
-//             <TableRow sx={{ background: "#000" }}>
-//               {["Title","Start date","End date","Description","Actions"].map(h => (
-//                 <TableCell key={h} sx={{ color: "#fff", fontSize: 13, p: 1 }}>{h}</TableCell>
-//               ))}
-//             </TableRow>
-//           </TableHead>
-//           <TableBody>
-//             {rows.map((r, i) => (
-//               <TableRow key={i} sx={{ "&:nth-of-type(odd)": { background: "#f5f5f5" } }}>
-//                 {[r.title, r.start, r.end, r.desc].map((v, j) => (
-//                   <TableCell key={j} sx={{ fontSize: 12, p: 1 }}>{v}</TableCell>
-//                 ))}
-//                 <TableCell sx={{ p: 1 }}>
-//                   <IconButton size="small" color="primary" onClick={() => handleView(r)}>
-//                     <Visibility fontSize="small" />
-//                   </IconButton>
-//                   <IconButton size="small" color="secondary" onClick={() => handleEdit(r, i)}>
-//                     <Edit fontSize="small" />
-//                   </IconButton>
-//                   <IconButton size="small" color="error" onClick={() => handleDelete(i)}>
-//                     <Delete fontSize="small" />
-//                   </IconButton>
-//                 </TableCell>
-//               </TableRow>
-//             ))}
-//           </TableBody>
-//         </Table>
-//       </TableContainer>
-
-//       {/* Dialog for Adding/Editing */}
-//       <Dialog open={open} onClose={() => setOpen(false)}>
-//         <DialogTitle>{editingIndex !== null ? "Edit Punch Log" : "Add Punch Log"}</DialogTitle>
-//         <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
-//           {[
-//             {name:"title", label:"Title"},
-//             {name:"start", label:"Start date"},
-//             {name:"end", label:"End date"},
-//             {name:"desc", label:"Description"}
-//           ].map((f) => (
-//             <TextField
-//               key={f.name}
-//               name={f.name}
-//               label={f.label}
-//               value={form[f.name]}
-//               onChange={handleChange}
-//               size="small"
-//               fullWidth
-//             />
-//           ))}
-//         </DialogContent>
-//         <DialogActions>
-//           <Button onClick={() => setOpen(false)}>Cancel</Button>
-//           <Button variant="contained" onClick={handleAdd}>
-//             {editingIndex !== null ? "Update" : "Add"}
-//           </Button>
-//         </DialogActions>
-//       </Dialog>
-
-//       {/* Dialog for Viewing */}
-//       <Dialog open={viewOpen} onClose={() => setViewOpen(false)}>
-//         <DialogTitle>View Punch Log</DialogTitle>
-//         <DialogContent>
-//           {viewData && (
-//             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-//               {Object.entries(viewData).map(([k, v]) => (
-//                 <Typography key={k}><b>{k}:</b> {v}</Typography>
-//               ))}
-//             </div>
-//           )}
-//         </DialogContent>
-//         <DialogActions>
-//           <Button onClick={() => setViewOpen(false)}>Close</Button>
-//         </DialogActions>
-//       </Dialog>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// "use client";
-// import * as React from "react";
-// import {
-//   Table, TableBody, TableCell, TableContainer,
-//   TableHead, TableRow, Paper, IconButton,
-//   Button, Dialog, DialogTitle, DialogContent,
-//   DialogActions, TextField, Typography
-// } from "@mui/material";
-// import { Visibility, Edit, Delete } from "@mui/icons-material";
-
-// export default function PunchLog() {
-//   const [rows, setRows] = React.useState([
-//     { title: "Morning Shift", start: "2025-08-01 09:00 AM", end: "2025-08-01 05:00 PM", desc: "Regular working hours" },
-//     { title: "Late Entry", start: "2025-08-02 10:00 AM", end: "2025-08-02 06:30 PM", desc: "Traffic delay" },
-//     { title: "Half Day", start: "2025-08-03 09:00 AM", end: "2025-08-03 01:00 PM", desc: "Personal work" },
-//     { title: "Overtime", start: "2025-08-04 09:00 AM", end: "2025-08-04 08:00 PM", desc: "Extra workload" },
-//     { title: "Remote Work", start: "2025-08-05 09:30 AM", end: "2025-08-05 06:00 PM", desc: "Work from home" },
-//   ]);
-
-//   const [open, setOpen] = React.useState(false);         // Add/Edit dialog
-//   const [viewOpen, setViewOpen] = React.useState(false); // View dialog
-//   const [editingIndex, setEditingIndex] = React.useState(null);
-//   const [form, setForm] = React.useState({
-//     title: "", start: "", end: "", desc: ""
-//   });
-//   const [viewData, setViewData] = React.useState(null);
-
-//   const handleChange = (e) => {
-//     setForm({ ...form, [e.target.name]: e.target.value });
-//   };
-
-//   const handleAdd = () => {
-//     if (editingIndex !== null) {
-//       // Update row
-//       const updated = [...rows];
-//       updated[editingIndex] = form;
-//       setRows(updated);
-//     } else {
-//       // Add new row
-//       setRows([...rows, form]);
-//     }
-//     setForm({ title: "", start: "", end: "", desc: "" });
-//     setEditingIndex(null);
-//     setOpen(false);
-//   };
-
-//   const handleView = (row) => {
-//     setViewData(row);
-//     setViewOpen(true);
-//   };
-
-//   const handleEdit = (row, index) => {
-//     setForm(row);
-//     setEditingIndex(index);
-//     setOpen(true);
-//   };
-
-//   const handleDelete = (index) => {
-//     setRows(rows.filter((_, i) => i !== index));
-//   };
-
-//   return (
-//     <>
-//       {/* Add Entry Button */}
-//       <Button
-//         variant="contained"
-//         sx={{ mb: 2, background: "#000" }}
-//         onClick={() => { setOpen(true); setEditingIndex(null); }}
-//       >
-//         Add Punch Log
-//       </Button>
-
-//       {/* Table */}
-//       <TableContainer component={Paper} sx={{ maxWidth: 1200 }}>
-//         <Table size="small" sx={{ width: "75vw" }}>
-//           <TableHead>
-//             <TableRow sx={{ background: "#000" }}>
-//               {["Title","Start date","End date","Description","Actions"].map(h => (
-//                 <TableCell key={h} sx={{ color: "#fff", fontSize: 13, p: 1 }}>{h}</TableCell>
-//               ))}
-//             </TableRow>
-//           </TableHead>
-//           <TableBody>
-//             {rows.map((r, i) => (
-//               <TableRow key={i} sx={{ "&:nth-of-type(odd)": { background: "#f5f5f5" } }}>
-//                 {[r.title, r.start, r.end, r.desc].map((v, j) => (
-//                   <TableCell key={j} sx={{ fontSize: 12, p: 1 }}>{v}</TableCell>
-//                 ))}
-//                 <TableCell sx={{ p: 1 }}>
-//                   <IconButton size="small" color="primary" onClick={() => handleView(r)}>
-//                     <Visibility fontSize="small" />
-//                   </IconButton>
-//                   <IconButton size="small" color="secondary" onClick={() => handleEdit(r, i)}>
-//                     <Edit fontSize="small" />
-//                   </IconButton>
-//                   <IconButton size="small" color="error" onClick={() => handleDelete(i)}>
-//                     <Delete fontSize="small" />
-//                   </IconButton>
-//                 </TableCell>
-//               </TableRow>
-//             ))}
-//           </TableBody>
-//         </Table>
-//       </TableContainer>
-
-//       {/* Dialog for Adding/Editing */}
-//       <Dialog open={open} onClose={() => setOpen(false)}>
-//         <DialogTitle>{editingIndex !== null ? "Edit Punch Log" : "Add Punch Log"}</DialogTitle>
-//         <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
-//           {[
-//             {name:"title", label:"Title"},
-//             {name:"start", label:"Start date"},
-//             {name:"end", label:"End date"},
-//             {name:"desc", label:"Description"}
-//           ].map((f) => (
-//             <TextField
-//               key={f.name}
-//               name={f.name}
-//               label={f.label}
-//               value={form[f.name]}
-//               onChange={handleChange}
-//               size="small"
-//             />
-//           ))}
-//         </DialogContent>
-//         <DialogActions>
-//           <Button onClick={() => setOpen(false)}>Cancel</Button>
-//           <Button variant="contained" onClick={handleAdd}>
-//             {editingIndex !== null ? "Update" : "Add"}
-//           </Button>
-//         </DialogActions>
-//       </Dialog>
-
-//       {/* Dialog for Viewing */}
-//       <Dialog open={viewOpen} onClose={() => setViewOpen(false)}>
-//         <DialogTitle>View Punch Log</DialogTitle>
-//         <DialogContent>
-//           {viewData && (
-//             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-//               {Object.entries(viewData).map(([k, v]) => (
-//                 <Typography key={k}><b>{k}:</b> {v}</Typography>
-//               ))}
-//             </div>
-//           )}
-//         </DialogContent>
-//         <DialogActions>
-//           <Button onClick={() => setViewOpen(false)}>Close</Button>
-//         </DialogActions>
-//       </Dialog>
-//     </>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// "use client";
-// import * as React from "react";
-// import {
-//   Table, TableBody, TableCell, TableContainer,
-//   TableHead, TableRow, Paper, IconButton
-// } from "@mui/material";
-// import { Visibility, Edit, Delete } from "@mui/icons-material";
-
-// const rows = [
-//   { name: "Frozen yoghurt", calories: 159, fat: 6.0, carbs: 24, protein: 4.0 },
-//   { name: "Ice cream sandwich", calories: 237, fat: 9.0, carbs: 37, protein: 4.3 },
-//   { name: "Eclair", calories: 262, fat: 16.0, carbs: 24, protein: 6.0 },
-//   { name: "Golden Ice cream", calories: 23.7, fat: 0.9, carbs: 3.7, protein: 0.3 },
-//   { name: "Mega Eclair", calories: 2620, fat: 160.0, carbs: 240, protein: 60.0 },
-// ];
-
-// export default function Punch() {
-//   return (
-//     <TableContainer component={Paper} sx={{ maxWidth: 1650 }}>
-//       <Table size="small" sx={{width:"81.77vw"}}>
-//         <TableHead>
-//           <TableRow sx={{ background: "#000" }}>
-//             {["Dessert", "Calories", "Fat", "Carbs", "Protein", "Actions"].map(h => (
-//               <TableCell key={h} sx={{ color: "#fff", fontSize: 13, p: 1 }}>{h}</TableCell>
-//             ))}
-//           </TableRow>
-//         </TableHead>
-//         <TableBody>
-//           {rows.map((r) => (
-//             <TableRow key={r.name} sx={{ "&:nth-of-type(odd)": { background: "#f5f5f5" } }}>
-//               {[r.name, r.calories, r.fat, r.carbs, r.protein].map((v, i) => (
-//                 <TableCell key={i} sx={{ fontSize: 12, p: 1 }}>{v}</TableCell>
-//               ))}
-//               <TableCell sx={{ p: 1 }}>
-//                 <IconButton size="small" color="primary"><Visibility fontSize="small" /></IconButton>
-//                 <IconButton size="small" color="secondary"><Edit fontSize="small" /></IconButton>
-//                 <IconButton size="small" color="error"><Delete fontSize="small" /></IconButton>
-//               </TableCell>
-//             </TableRow>
-//           ))}
-//         </TableBody>
-//       </Table>
-//     </TableContainer>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// export default function Punch() {
-  //   return <h2>Punch In/Out Page</h2>;
-  // }
+export default AttendancePunchPage;

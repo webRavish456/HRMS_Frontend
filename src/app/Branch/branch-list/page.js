@@ -1,594 +1,326 @@
-
-// "use client";
-
-// import Layout from "../../../components/Layout";
-// import React, { useState } from "react";
-// import {
-//   Table, TableBody, TableCell, TableContainer,
-//   TableHead, TableRow, Paper, IconButton,
-//   TextField, Button
-// } from "@mui/material";
-
-// import VisibilityIcon from "@mui/icons-material/Visibility";
-// import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
-
-// import CommonDialog from "@/components/commonDialog";
-
-// // Import Child Components
-// import CreateBranch from "@/components/Branch/branch-list/create";
-// import EditBranch from "@/components/Branch/branch-list/edit";
-// import ViewBranch from "@/components/Branch/branch-list/view";
-// import DeleteBranch from "@/components/Branch/branch-list/delete";
-
-// const Branch = () => {
-//   const [search, setSearch] = useState("");
-//   const [rows, setRows] = useState([
-//     { si: 1, _id: "b1", BranchName: "Delhi Branch", Location: "Delhi", Status: "active" },
-//     { si: 2, _id: "b2", BranchName: "Parsudih", Location: "Kashmahal", Status: "active" },
-//     { si: 3, _id: "b3", BranchName: "Bistupur", Location: "Sakchi", Status: "active" },
-//     { si: 4, _id: "b4", BranchName: "Haldipokhar", Location: "Hata", Status: "active" },
-//   ]);
-//   // Dialog states
-//   const [openData, setOpenData] = useState(false);
-//   const [viewShow, setViewShow] = useState(false);
-//   const [editShow, setEditShow] = useState(false);
-//   const [deleteShow, setDeleteShow] = useState(false);
-
-//   // Selected Data
-//   const [viewData, setViewData] = useState(null);
-//   const [editData, setEditData] = useState(null);
-//   const [deleteId, setDeleteId] = useState(null);
-
-//   const [isDeleting, setIsDeleting] = useState(false);
-
-//   // Filter Rows
-//   const filteredRows = rows.filter(
-//     (row) =>
-//       row.BranchName.toLowerCase().includes(search.toLowerCase()) ||
-//       row.Location.toLowerCase().includes(search.toLowerCase())
-//   );
-
-//   // Close Dialog
-//   const handleClose = () => {
-//     setOpenData(false);
-//     setViewShow(false);
-//     setEditShow(false);
-//     setDeleteShow(false);
-//   };
-
-//   // Handlers
-//   const handleCreate = (newBranch) => {
-//     setRows([...rows, { ...newBranch, si: rows.length + 1, _id: `b${rows.length + 1}` }]);
-//     setOpenData(false);
-//   };
-
-//   const handleUpdate = (updatedBranch) => {
-//     setRows(rows.map((row) => (row._id === updatedBranch._id ? updatedBranch : row)));
-//     setEditShow(false);
-//   };
-
-
-// const handleDelete = () => {
-//   setIsDeleting(true);
-//   setTimeout(() => {
-//     const updatedRows = rows.filter((row) => row._id !== deleteId);
-
-//     // 🔑 Re-generate serial numbers
-//     const reIndexedRows = updatedRows.map((row, index) => ({
-//       ...row,
-//       si: index + 1,   // line wise numbering
-//     }));
-
-//     setRows(reIndexedRows);
-//     setIsDeleting(false);
-//     handleClose();
-//   }, 1000);
-// };
-
-//   return (
-//     <Layout>
-//       <div style={{ padding: "20px" }}>
-//         {/* Header */}
-//         <div style={{
-//           display: "flex", justifyContent: "space-between",
-//           alignItems: "center", marginBottom: "20px"
-//         }}>
-//           <h2 style={{ margin: 0 }}>Branch List</h2>
-//           <div style={{ display: "flex", gap: "10px" }}>
-//             <TextField
-//               size="small"
-//               placeholder="Search..."
-//               variant="outlined"
-//               value={search}
-//               onChange={(e) => setSearch(e.target.value)}
-//             />
-//             <Button
-//               variant="contained"
-//               style={{ backgroundColor: "#1a237e", color: "#fff", fontWeight: "bold" }}
-//               onClick={() => setOpenData(true)}
-//             >
-//               + Add New Branch
-//             </Button>
-//           </div>
-//         </div>
-
-//         {/* Table */}
-//         <TableContainer component={Paper}>
-//           <Table>
-//             <TableHead>
-//               <TableRow>
-//                 <TableCell>Sl.No</TableCell>
-//                 <TableCell>Branch Name</TableCell>
-//                 <TableCell>Location</TableCell>
-//                 <TableCell>Status</TableCell>
-//                 <TableCell>Action</TableCell>
-//               </TableRow>
-//             </TableHead>
-//             <TableBody>
-//               {filteredRows.map((row) => (
-//                 <TableRow key={row._id}>
-//                   <TableCell>{row.si}</TableCell>
-//                   <TableCell>{row.BranchName}</TableCell>
-//                   <TableCell>{row.Location}</TableCell>
-//                   <TableCell>{row.Status}</TableCell>
-//                   <TableCell>
-//                     <IconButton onClick={() => { setViewData(row); setViewShow(true); }}>
-//                       <VisibilityIcon style={{ color: "#072eb0" }} />
-//                     </IconButton>
-//                     <IconButton onClick={() => { setEditData(row); setEditShow(true); }}>
-//                       <EditIcon style={{ color: "#6b6666" }} />
-//                     </IconButton>
-//                     <IconButton onClick={() => { setDeleteId(row._id); setDeleteShow(true); }}>
-//                       <DeleteIcon style={{ color: "#e6130b" }} />
-//                     </IconButton>
-//                   </TableCell>
-//                 </TableRow>
-//               ))}
-//             </TableBody>
-//           </Table>
-//         </TableContainer>
-
-//         {/* Common Dialog */}
-//         <CommonDialog
-//           open={openData || viewShow || editShow || deleteShow}
-//           onClose={handleClose}
-//           dialogTitle={
-//             openData ? "Create New Branch" :
-//             viewShow ? "View Branch" :
-//             editShow ? "Edit Branch" :
-//             deleteShow ? "Delete Branch" : ""
-//           }
-//           dialogContent={
-//             openData ? (
-//               <CreateBranch handleCreate={handleCreate} handleClose={handleClose} />
-//             ) : viewShow ? (
-//               <ViewBranch viewData={viewData} />
-//             ) : editShow ? (
-//               <EditBranch editData={editData} handleUpdate={handleUpdate} handleClose={handleClose} />
-//             ) : deleteShow ? (
-//               <DeleteBranch handleDelete={handleDelete} isDeleting={isDeleting} handleClose={handleClose} />
-//             ) : null
-//           }
-//         />
-//       </div>
-//     </Layout>
-//   );
-// };
-
-// export default Branch;
-
-
-// "use client";
-
-// import Layout from "../../../components/Layout";
-// import React, { useState } from "react";
-// import {
-//   Table, TableBody, TableCell, TableContainer,
-//   TableHead, TableRow, Paper, IconButton,
-//   TextField, Button
-// } from "@mui/material";
-
-// import VisibilityIcon from "@mui/icons-material/Visibility";
-// import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
-
-// import CommonDialog from "@/components/commonDialog";
-
-// // Child Components
-// import CreateBranch from "@/components/Branch/branch-list/create";
-// import EditBranch from "@/components/Branch/branch-list/edit";
-// import ViewBranch from "@/components/Branch/branch-list/view";
-// import DeleteBranch from "@/components/Branch/branch-list/delete";
-
-// export default function Branch() {
-//   const [search, setSearch] = useState("");
-
-//   // 🔹 Helper function to create row
-//   const createData = (si, _id, BranchName, Location, Status) => {
-//     return {
-//       si,
-//       _id,
-//       BranchName,
-//       Location,
-//       Status,
-//       action: (
-//         <>
-//           <IconButton onClick={() => handleOpen("view", { si, _id, BranchName, Location, Status })}>
-//             <VisibilityIcon style={{ color: "#072eb0" }} />
-//           </IconButton>
-//           <IconButton onClick={() => handleOpen("edit", { si, _id, BranchName, Location, Status })}>
-//             <EditIcon style={{ color: "#6b6666" }} />
-//           </IconButton>
-//           <IconButton onClick={() => handleOpen("delete", { si, _id })}>
-//             <DeleteIcon style={{ color: "#e6130b" }} />
-//           </IconButton>
-//         </>
-//       )
-//     };
-//   };
-
-//   // 🔹 Initial rows
-//   const [rows, setRows] = useState([
-//     createData(1, "b1", "Delhi Branch", "Delhi", "active"),
-//     createData(2, "b2", "Parsudih", "Kashmahal", "active"),
-//     createData(3, "b3", "Bistupur", "Sakchi", "active"),
-//     createData(4, "b4", "Haldipokhar", "Hata", "active"),
-//   ]);
-
-//   const [dialogState, setDialogState] = useState({ open: false, type: "" });
-//   const [selectedRow, setSelectedRow] = useState(null);
-//   const [isDeleting, setIsDeleting] = useState(false);
-
-//   // 🔹 Handlers
-//   const handleOpen = (type, row = null) => {
-//     setDialogState({ open: true, type });
-//     setSelectedRow(row);
-//   };
-
-//   const handleClose = () => {
-//     setDialogState({ open: false, type: "" });
-//     setSelectedRow(null);
-//   };
-
-//   const handleCreate = (newBranch) => {
-//     const newRow = createData(
-//       rows.length + 1,
-//       `b${rows.length + 1}`,
-//       newBranch.BranchName,
-//       newBranch.Location,
-//       newBranch.Status
-//     );
-//     setRows([...rows, newRow]);
-//     handleClose();
-//   };
-
-//   const handleUpdate = (updatedBranch) => {
-//     const updatedRows = rows.map((row) =>
-//       row._id === updatedBranch._id
-//         ? createData(row.si, row._id, updatedBranch.BranchName, updatedBranch.Location, updatedBranch.Status)
-//         : row
-//     );
-//     setRows(updatedRows);
-//     handleClose();
-//   };
-
-//   const handleDelete = () => {
-//     setIsDeleting(true);
-//     setTimeout(() => {
-//       const updatedRows = rows.filter((row) => row._id !== selectedRow._id);
-
-//       // 🔑 Re-index Sl.No
-//       const reIndexedRows = updatedRows.map((row, index) =>
-//         createData(index + 1, row._id, row.BranchName, row.Location, row.Status)
-//       );
-
-//       setRows(reIndexedRows);
-//       setIsDeleting(false);
-//       handleClose();
-//     }, 1000);
-//   };
-
-//   // 🔹 Search filter
-//   const filteredRows = rows.filter(
-//     (row) =>
-//       row.BranchName.toLowerCase().includes(search.toLowerCase()) ||
-//       row.Location.toLowerCase().includes(search.toLowerCase())
-//   );
-
-//   return (
-//     <Layout>
-//       <div style={{ padding: "20px" }}>
-//         {/* Header */}
-//         <div style={{
-//           display: "flex", justifyContent: "space-between",
-//           alignItems: "center", marginBottom: "20px"
-//         }}>
-//           <h2 style={{ margin: 0 }}>Branch List</h2>
-//           <div style={{ display: "flex", gap: "10px" }}>
-//             <TextField
-//               size="small"
-//               placeholder="Search..."
-//               variant="outlined"
-//               value={search}
-//               onChange={(e) => setSearch(e.target.value)}
-//             />
-//             <Button
-//               variant="contained"
-//               style={{ backgroundColor: "#1a237e", color: "#fff", fontWeight: "bold" }}
-//               onClick={() => handleOpen("create")}
-//             >
-//               + Add New Branch
-//             </Button>
-//           </div>
-//         </div>
-
-//         {/* Table */}
-//         <TableContainer component={Paper}>
-//           <Table>
-//             <TableHead className="forheadcolor">
-//               <TableRow>
-//                 <TableCell><b>Sl.No</b></TableCell>
-//                 <TableCell><b>Branch Name</b></TableCell>
-//                 <TableCell><b>Location</b></TableCell>
-//                 <TableCell><b>Status</b></TableCell>
-//                 <TableCell><b>Action</b></TableCell>
-//               </TableRow>
-//             </TableHead>
-//             <TableBody className="forcolor">
-//               {filteredRows.map((row) => (
-//                 <TableRow key={row._id}>
-//                   <TableCell>{row.si}</TableCell>
-//                   <TableCell>{row.BranchName}</TableCell>
-//                   <TableCell>{row.Location}</TableCell>
-//                   <TableCell>{row.Status}</TableCell>
-//                   <TableCell>{row.action}</TableCell>
-//                 </TableRow>
-//               ))}
-//             </TableBody>
-//           </Table>
-//         </TableContainer>
-
-//         {/* Dialog */}
-//         <CommonDialog
-//           open={dialogState.open}
-//           onClose={handleClose}
-//           dialogTitle={
-//             dialogState.type === "create" ? "Create New Branch" :
-//             dialogState.type === "view" ? "View Branch" :
-//             dialogState.type === "edit" ? "Edit Branch" :
-//             dialogState.type === "delete" ? "Delete Branch" : ""
-//           }
-//           dialogContent={
-//             dialogState.type === "create" ? (
-//               <CreateBranch handleCreate={handleCreate} handleClose={handleClose} />
-//             ) : dialogState.type === "view" ? (
-//               <ViewBranch viewData={selectedRow} />
-//             ) : dialogState.type === "edit" ? (
-//               <EditBranch editData={selectedRow} handleUpdate={handleUpdate} handleClose={handleClose} />
-//             ) : dialogState.type === "delete" ? (
-//               <DeleteBranch handleDelete={handleDelete} isDeleting={isDeleting} handleClose={handleClose} />
-//             ) : null
-//           }
-//         />
-//       </div>
-//     </Layout>
-//   );
-// }
-
-
 "use client";
 
-import Layout from "../../../components/Layout";
 import React, { useState } from "react";
 import {
-  Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, IconButton,
-  TextField, Button
+  Box,
+  Typography,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Chip,
+  Grid,
+  InputAdornment,
+  Pagination,
+  Stack,
 } from "@mui/material";
-
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-
+import {
+  Add,
+  EditOutlined,
+  DeleteOutlined,
+  VisibilityOutlined,
+  Search,
+  FilterList,
+  Download,
+} from "@mui/icons-material";
 import CommonDialog from "@/components/commonDialog";
-
-// Child Components
 import CreateBranch from "@/components/Branch/branch-list/create";
 import EditBranch from "@/components/Branch/branch-list/edit";
 import ViewBranch from "@/components/Branch/branch-list/view";
 import DeleteBranch from "@/components/Branch/branch-list/delete";
 
-export default function Branch() {
+const BranchListPage = () => {
+  const [branches, setBranches] = useState([
+    {
+      id: "BR001",
+      branchName: "Head Office",
+      branchLocation: "Mumbai, Maharashtra",
+      status: "Active",
+      createdAt: "2024-01-15"
+    },
+    {
+      id: "BR002", 
+      branchName: "Delhi Branch",
+      branchLocation: "New Delhi, Delhi",
+      status: "Active",
+      createdAt: "2024-02-20"
+    },
+    {
+      id: "BR003",
+      branchName: "Bangalore Branch",
+      branchLocation: "Bangalore, Karnataka",
+      status: "Active",
+      createdAt: "2024-03-10"
+    },
+    {
+      id: "BR004",
+      branchName: "Chennai Branch",
+      branchLocation: "Chennai, Tamil Nadu",
+      status: "Active",
+      createdAt: "2024-03-25"
+    },
+    {
+      id: "BR005",
+      branchName: "Kolkata Branch",
+      branchLocation: "Kolkata, West Bengal",
+      status: "Active",
+      createdAt: "2024-04-05"
+    },
+    {
+      id: "BR006",
+      branchName: "Hyderabad Branch",
+      branchLocation: "Hyderabad, Telangana",
+      status: "Active",
+      createdAt: "2024-04-15"
+    },
+    {
+      id: "BR007",
+      branchName: "Pune Branch",
+      branchLocation: "Pune, Maharashtra",
+      status: "Active",
+      createdAt: "2024-04-20"
+    },
+    {
+      id: "BR008",
+      branchName: "Ahmedabad Branch",
+      branchLocation: "Ahmedabad, Gujarat",
+      status: "Inactive",
+      createdAt: "2024-05-01"
+    },
+    {
+      id: "BR009",
+      branchName: "Jaipur Branch",
+      branchLocation: "Jaipur, Rajasthan",
+      status: "Active",
+      createdAt: "2024-05-10"
+    },
+    {
+      id: "BR010",
+      branchName: "Kochi Branch",
+      branchLocation: "Kochi, Kerala",
+      status: "Active",
+      createdAt: "2024-05-15"
+    }
+  ]);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+
+  // Dialog States
   const [openData, setOpenData] = useState(false);
   const [viewShow, setViewShow] = useState(false);
   const [editShow, setEditShow] = useState(false);
   const [deleteShow, setDeleteShow] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState(null);
 
-  const [viewData, setViewData] = useState(null);
-  const [editData, setEditData] = useState(null);
-  const [deleteData, setDeleteData] = useState(null);
-
-  // 🔹 Helper function to create row
-  const createData = (si, _id, BranchName, Location, Status) => {
-    const handleView = () => {
-      setViewData({ si, _id, BranchName, Location, Status });
-      setViewShow(true);
-    };
-
-    const handleEdit = () => {
-      setEditData({ si, _id, BranchName, Location, Status });
-      setEditShow(true);
-    };
-
-    const handleDelete = () => {
-      setDeleteData({ si, _id, BranchName, Location, Status });
-      setDeleteShow(true);
-    };
-
-    return {
-      si,
-      _id,
-      BranchName,
-      Location,
-      Status,
-      action: (
-        <>
-          <IconButton onClick={handleView}>
-            <VisibilityIcon style={{ color: "#072eb0" }} />
-          </IconButton>
-          <IconButton onClick={handleEdit}>
-            <EditIcon style={{ color: "#6b6666" }} />
-          </IconButton>
-          <IconButton onClick={handleDelete}>
-            <DeleteIcon style={{ color: "#e6130b" }} />
-          </IconButton>
-        </>
-      )
-    };
-  };
-
-  // 🔹 Initial rows
-  const [rows, setRows] = useState([
-    createData(1, "b1", "Delhi Branch", "Delhi", "active"),
-    createData(2, "b2", "Parsudih", "Kashmahal", "active"),
-    createData(3, "b3", "Bistupur", "Sakchi", "active"),
-    createData(4, "b4", "Haldipokhar", "Hata", "active"),
-  ]);
 
   const handleClose = () => {
     setOpenData(false);
     setViewShow(false);
     setEditShow(false);
     setDeleteShow(false);
-    setViewData(null);
-    setEditData(null);
-    setDeleteData(null);
+    setSelectedBranch(null);
   };
 
-  const handleCreate = (newBranch) => {
-    const newRow = createData(
-      rows.length + 1,
-      `b${rows.length + 1}`,
-      newBranch.BranchName,
-      newBranch.Location,
-      newBranch.Status
-    );
-    setRows([...rows, newRow]);
-    setOpenData(false);
+  const handleCreate = (formData) => {
+    const newBranch = {
+      id: `BR${String(branches.length + 1).padStart(3, '0')}`,
+      ...formData,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+    setBranches([...branches, newBranch]);
+    handleClose();
   };
 
-  const handleUpdate = (updatedBranch) => {
-    const updatedRows = rows.map((row) =>
-      row._id === updatedBranch._id
-        ? createData(row.si, row._id, updatedBranch.BranchName, updatedBranch.Location, updatedBranch.Status)
-        : row
-    );
-    setRows(updatedRows);
-    setEditShow(false);
+  const handleUpdate = (formData) => {
+    setBranches(branches.map(branch => 
+      branch.id === selectedBranch.id 
+        ? { ...branch, ...formData }
+        : branch
+    ));
+    handleClose();
   };
 
   const handleDelete = () => {
-    const updatedRows = rows.filter((row) => row._id !== deleteData._id);
-
-    // 🔑 Re-index Sl.No
-    const reIndexedRows = updatedRows.map((row, index) =>
-      createData(index + 1, row._id, row.BranchName, row.Location, row.Status)
-    );
-
-    setRows(reIndexedRows);
-    setDeleteShow(false);
+    setBranches(branches.filter(branch => branch.id !== selectedBranch.id));
+    handleClose();
   };
 
-  // 🔹 Search filter
-  const filteredRows = rows.filter(
-    (row) =>
-      row.BranchName.toLowerCase().includes(search.toLowerCase()) ||
-      row.Location.toLowerCase().includes(search.toLowerCase())
-  );
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Active': return 'hrms-badge-success';
+      case 'Inactive': return 'hrms-badge-error';
+      default: return 'hrms-badge-neutral';
+    }
+  };
+
+  const filteredBranches = branches.filter(branch => {
+    const matchesSearch = branch.branchName.toLowerCase().includes(search.toLowerCase()) ||
+                         branch.branchLocation.toLowerCase().includes(search.toLowerCase()) ||
+                         branch.id.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = filterStatus === "all" || branch.status === filterStatus;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   return (
-    <Layout>
-      <div style={{ padding: "20px" }}>
-        {/* Header */}
-        <div style={{
-          display: "flex", justifyContent: "space-between",
-          alignItems: "center", marginBottom: "20px"
-        }}>
-          <h2 style={{ margin: 0 }}>Branch List</h2>
-          <div style={{ display: "flex", gap: "10px" }}>
-            <TextField
-              size="small"
-              placeholder="Search..."
-              variant="outlined"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <Button
-              variant="contained"
-              style={{ backgroundColor: "#1a237e", color: "#fff", fontWeight: "bold" }}
-              onClick={() => setOpenData(true)}
-            >
-              + Add New Branch
-            </Button>
-          </div>
-        </div>
+    <Box sx={{ padding: "0.5rem" }}>
+      {/* Search and Create Button */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
+        <TextField
+          placeholder="Search branches..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ width: "300px", "& .MuiOutlinedInput-root": { height: "40px" } }}
+        />
+        <button 
+          className="hrms-btn hrms-btn-primary"
+          onClick={() => setOpenData(true)}
+          style={{ height: "40px" }}
+        >
+          <Add />
+          Add Branch
+        </button>
+      </Box>
 
-        {/* Table */}
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead className="forheadcolor">
+      {/* Branch Table */}
+      <Box className="hrms-card">
+        <Box className="hrms-card-content" sx={{ padding: 0 }}>
+          <Table className="hrms-table">
+            <TableHead>
               <TableRow>
-                <TableCell><b>Sl.No</b></TableCell>
-                <TableCell><b>Branch Name</b></TableCell>
-                <TableCell><b>Location</b></TableCell>
-                <TableCell><b>Status</b></TableCell>
-                <TableCell><b>Action</b></TableCell>
+                <TableCell>S. No.</TableCell>
+                <TableCell>ID</TableCell>
+                <TableCell>Branch Name</TableCell>
+                <TableCell>Branch Location</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody className="forcolor">
-              {filteredRows.map((row) => (
-                <TableRow key={row._id}>
-                  <TableCell>{row.si}</TableCell>
-                  <TableCell>{row.BranchName}</TableCell>
-                  <TableCell>{row.Location}</TableCell>
-                  <TableCell>{row.Status}</TableCell>
-                  <TableCell>{row.action}</TableCell>
-                </TableRow>
-              ))}
+            <TableBody>
+              {filteredBranches
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((branch, index) => (
+                  <TableRow key={branch.id}>
+                    <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                    <TableCell>{branch.id}</TableCell>
+                    <TableCell>{branch.branchName}</TableCell>
+                    <TableCell>{branch.branchLocation}</TableCell>
+                    <TableCell>
+                      <Box className={`hrms-badge ${getStatusColor(branch.status)}`}>
+                        {branch.status}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: "flex", gap: "0.25rem" }}>
+                        <IconButton 
+                          size="small"
+                          onClick={() => { setSelectedBranch(branch); setViewShow(true); }}
+                          sx={{ color: "#1976D2", fontSize: "16px" }}
+                        >
+                          <VisibilityOutlined />
+                        </IconButton>
+                        <IconButton 
+                          size="small"
+                          onClick={() => { 
+                            setSelectedBranch(branch); 
+                            setEditShow(true); 
+                          }}
+                          sx={{ color: "#000", fontSize: "16px" }}
+                        >
+                          <EditOutlined />
+                        </IconButton>
+                        <IconButton 
+                          size="small"
+                          onClick={() => { setSelectedBranch(branch); setDeleteShow(true); }}
+                          sx={{ color: "#d32f2f", fontSize: "16px" }}
+                        >
+                          <DeleteOutlined />
+                        </IconButton>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
-        </TableContainer>
+        </Box>
+        <Box sx={{ padding: "0.75rem 1rem", borderTop: "1px solid #e5e5e5", backgroundColor: "#fafafa" }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="body2" sx={{ color: "#333", fontWeight: 500, fontSize: "0.875rem" }}>
+              Showing {page * rowsPerPage + 1} to {Math.min((page + 1) * rowsPerPage, filteredBranches.length)} of {filteredBranches.length} branches
+            </Typography>
+            <Pagination
+              count={Math.ceil(filteredBranches.length / rowsPerPage)}
+              page={page + 1}
+              onChange={(event, value) => setPage(value - 1)}
+              color="primary"
+            />
+          </Stack>
+        </Box>
+      </Box>
 
-        {/* Dialog */}
-        <CommonDialog
-          open={openData || viewShow || editShow || deleteShow}
-          onClose={handleClose}
-          dialogTitle={
-            openData
-              ? "Create New Branch"
-              : viewShow
-              ? "View Branch"
-              : editShow
-              ? "Edit Branch"
-              : deleteShow
-              ? "Delete Branch"
-              : ""
-          }
-          dialogContent={
-            openData ? (
-              <CreateBranch handleCreate={handleCreate} handleClose={handleClose} />
-            ) : viewShow ? (
-              <ViewBranch viewData={viewData} />
-            ) : editShow ? (
-              <EditBranch editData={editData} handleUpdate={handleUpdate} handleClose={handleClose} />
-            ) : deleteShow ? (
-              <DeleteBranch handleDelete={handleDelete} handleClose={handleClose} />
-            ) : null
-          }
-        />
-      </div>
-    </Layout>
+      {/* Common Dialog */}
+      <CommonDialog
+        open={openData || viewShow || editShow || deleteShow}
+        onClose={handleClose}
+        dialogTitle={
+          openData
+            ? "Add Branch"
+            : viewShow
+            ? "Branch Details"
+            : editShow
+            ? "Edit Branch"
+            : deleteShow
+            ? "Delete Branch"
+            : ""
+        }
+        dialogContent={
+          openData ? (
+            <CreateBranch 
+              handleCreate={handleCreate} 
+              handleClose={handleClose} 
+            />
+          ) : viewShow ? (
+            <ViewBranch 
+              selectedBranch={selectedBranch} 
+              handleClose={handleClose} 
+              getStatusColor={getStatusColor} 
+            />
+          ) : editShow ? (
+            <EditBranch 
+              handleUpdate={handleUpdate} 
+              handleClose={handleClose} 
+              selectedBranch={selectedBranch}
+            />
+          ) : deleteShow ? (
+            <DeleteBranch 
+              selectedBranch={selectedBranch} 
+              handleDelete={handleDelete} 
+              handleClose={handleClose} 
+            />
+          ) : null
+        }
+      />
+    </Box>
   );
-}
+};
+
+export default BranchListPage;

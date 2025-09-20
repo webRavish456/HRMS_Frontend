@@ -1,121 +1,112 @@
-import React, { useState } from "react";
-import { Button, TextField, MenuItem } from "@mui/material";
+import React from "react";
+import {
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Grid
+} from "@mui/material";
 
-const EditIndicator = ({ editData, handleUpdate, handleClose }) => {
-  const [goals, setGoals] = useState(editData?.goals || "");
-  const [selfRating, setSelfRating] = useState(editData?.selfRating || "");
-  const [managerRating, setManagerRating] = useState(editData?.managerRating || "");
-  const [feedback, setFeedback] = useState(editData?.feedback || "");
-  const [finalScore, setFinalScore] = useState(editData?.finalScore || "");
-  const [status, setStatus] = useState(editData?.status || "In Progress");
-
-  const handleSubmit = () => {
-    const updatedIndicator = {
-      ...editData,
-      goals,
-      selfRating,
-      managerRating,
-      feedback,
-      finalScore,
-      status,
-    };
-    handleUpdate(updatedIndicator);
-  };
-
+const Edit = ({ formData, handleInputChange }) => {
   return (
-    <div>
-      {/* Goals & KPIs */}
-      <TextField
-        label="Goals & KPIs"
-        fullWidth
-        margin="normal"
-        multiline
-        rows={3}
-        value={goals}
-        onChange={(e) => setGoals(e.target.value)}
-      />
-
-      {/* Self Rating */}
-      <TextField
-        select
-        label="Self Rating"
-        fullWidth
-        margin="normal"
-        value={selfRating}
-        onChange={(e) => setSelfRating(e.target.value)}
-      >
-        {[1, 2, 3, 4, 5].map((val) => (
-          <MenuItem key={val} value={val}>
-            {val}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      {/* Manager Rating */}
-      <TextField
-        select
-        label="Manager Rating"
-        fullWidth
-        margin="normal"
-        value={managerRating}
-        onChange={(e) => setManagerRating(e.target.value)}
-      >
-        {[1, 2, 3, 4, 5].map((val) => (
-          <MenuItem key={val} value={val}>
-            {val}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      {/* Feedback Notes */}
-      <TextField
-        label="Feedback Notes"
-        fullWidth
-        margin="normal"
-        multiline
-        rows={3}
-        value={feedback}
-        onChange={(e) => setFeedback(e.target.value)}
-      />
-
-      {/* Final Score */}
-      <TextField
-        label="Final Score"
-        fullWidth
-        margin="normal"
-        value={finalScore}
-        onChange={(e) => setFinalScore(e.target.value)}
-      />
-
-      {/* Status */}
-      <TextField
-        select
-        label="Status"
-        fullWidth
-        margin="normal"
-        value={status}
-        onChange={(e) => setStatus(e.target.value)}
-      >
-        <MenuItem value="In Progress">In Progress</MenuItem>
-        <MenuItem value="Completed">Completed</MenuItem>
-      </TextField>
-
-      {/* Buttons */}
-      <div
-        style={{
-          marginTop: "20px",
-          display: "flex",
-          gap: "10px",
-          justifyContent: "flex-end",
-        }}
-      >
-        <Button variant="contained" onClick={handleSubmit}>
-          Update
-        </Button>
-        <Button onClick={handleClose}>Cancel</Button>
-      </div>
-    </div>
+    <Grid container spacing={3}>
+      <Grid size={{xs:12, md:6}}>
+        <TextField
+          fullWidth
+          label="Employee Name"
+          value={formData.employee}
+          onChange={(e) => handleInputChange("employee", e.target.value)}
+          variant="outlined"
+        />
+      </Grid>
+      <Grid size={{xs:12, md:6}}>
+        <TextField
+          fullWidth
+          label="Department"
+          value={formData.department}
+          onChange={(e) => handleInputChange("department", e.target.value)}
+          variant="outlined"
+        />
+      </Grid>
+      <Grid size={{xs:12, md:6}}>
+        <TextField
+          fullWidth
+          label="Position"
+          value={formData.position}
+          onChange={(e) => handleInputChange("position", e.target.value)}
+          variant="outlined"
+        />
+      </Grid>
+      <Grid size={{xs:12, md:6}}>
+        <FormControl fullWidth variant="outlined">
+          <InputLabel>Performance Rating</InputLabel>
+          <Select
+            value={formData.rating}
+            onChange={(e) => handleInputChange("rating", e.target.value)}
+            label="Performance Rating"
+          >
+            <MenuItem value="Excellent">Excellent</MenuItem>
+            <MenuItem value="Good">Good</MenuItem>
+            <MenuItem value="Average">Average</MenuItem>
+            <MenuItem value="Below Average">Below Average</MenuItem>
+            <MenuItem value="Poor">Poor</MenuItem>
+          </Select>
+        </FormControl>
+      </Grid>
+      <Grid size={{xs:12, md:6}}>
+        <TextField
+          fullWidth
+          label="Review Period"
+          value={formData.reviewPeriod}
+          onChange={(e) => handleInputChange("reviewPeriod", e.target.value)}
+          variant="outlined"
+        />
+      </Grid>
+      <Grid size={{xs:12, md:6}}>
+        <TextField
+          fullWidth
+          label="Reviewer"
+          value={formData.reviewer}
+          onChange={(e) => handleInputChange("reviewer", e.target.value)}
+          variant="outlined"
+        />
+      </Grid>
+      <Grid size={{xs:12}}>
+        <TextField
+          fullWidth
+          label="Goals Achieved"
+          value={formData.goalsAchieved}
+          onChange={(e) => handleInputChange("goalsAchieved", e.target.value)}
+          variant="outlined"
+          multiline
+          rows={3}
+        />
+      </Grid>
+      <Grid size={{xs:12}}>
+        <TextField
+          fullWidth
+          label="Areas for Improvement"
+          value={formData.areasForImprovement}
+          onChange={(e) => handleInputChange("areasForImprovement", e.target.value)}
+          variant="outlined"
+          multiline
+          rows={3}
+        />
+      </Grid>
+      <Grid size={{xs:12}}>
+        <TextField
+          fullWidth
+          label="Comments"
+          value={formData.comments}
+          onChange={(e) => handleInputChange("comments", e.target.value)}
+          variant="outlined"
+          multiline
+          rows={3}
+        />
+      </Grid>
+    </Grid>
   );
 };
 
-export default EditIndicator;
+export default Edit;

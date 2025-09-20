@@ -1,14 +1,13 @@
 'use client';
 
-import Sidebar from "./Sidebar";
-import Header from "./Header";
+import Sidebar from "./sidebar";
+import Header from "./header";
 
 export default function Layout({ children }) {
   return (
     <div className="app-container">
       <Sidebar />
       <div className="main-content">
-        {/* Single Header applied here only */}
         <Header />
         <main className="content-area">{children}</main>
       </div>
